@@ -141,7 +141,9 @@ WSEGAICD
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_NOT_SUPPORTED, Opm::InputErrorAction::THROW_EXCEPTION);
     Opm::CompletedCells cells(grid);
     Opm::FieldPropsManager fp(deck, Opm::Phases{true, true, true}, grid, Opm::TableManager());
-    const auto& [new_connection_set, new_segment_set] = Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard);
+    const auto& schedule_grid = Opm::ScheduleGrid(grid, fp, cells);
+    const auto& compsegs_vector = Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, schedule_grid, parseContext, errorGuard);
+    const auto& [new_connection_set, new_segment_set] = Opm::Compsegs::processCOMPSEGS(compsegs_vector, connection_set, segment_set, schedule_grid);
 
     // checking the ICD segment
     const Opm::DeckKeyword wsegaicd = deck["WSEGAICD"].back();
@@ -308,7 +310,9 @@ WSEGSICD
     Opm::FieldPropsManager fp(deck, Opm::Phases{true, true, true}, grid, Opm::TableManager());
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_INVALID, Opm::InputErrorAction::THROW_EXCEPTION);
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_NOT_SUPPORTED, Opm::InputErrorAction::THROW_EXCEPTION);
-    const auto& [new_connection_set, new_segment_set] = Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard);
+    const auto& schedule_grid = Opm::ScheduleGrid(grid, fp, cells);
+    const auto& compsegs_vector = Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, schedule_grid, parseContext, errorGuard);
+    const auto& [new_connection_set, new_segment_set] = Opm::Compsegs::processCOMPSEGS(compsegs_vector, connection_set, segment_set, schedule_grid);
 
     // checking the ICD segment
     const Opm::DeckKeyword wsegsicd = deck["WSEGSICD"].back();
@@ -477,10 +481,10 @@ BOOST_AUTO_TEST_CASE(WrongDistanceCOMPSEGS)
     Opm::CompletedCells cells(grid);
     Opm::FieldPropsManager fp(deck, Opm::Phases{true, true, true}, grid, Opm::TableManager());
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_INVALID, Opm::InputErrorAction::THROW_EXCEPTION);
-    BOOST_CHECK_THROW(Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard), Opm::OpmInputError);
+    BOOST_CHECK_THROW(Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard), Opm::OpmInputError);
 
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_INVALID, Opm::InputErrorAction::IGNORE);
-    BOOST_CHECK_NO_THROW(Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard));
+    BOOST_CHECK_NO_THROW(Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard));
 }
 
 BOOST_AUTO_TEST_CASE(NegativeDepthCOMPSEGS)
@@ -559,10 +563,10 @@ BOOST_AUTO_TEST_CASE(NegativeDepthCOMPSEGS)
     Opm::CompletedCells cells(grid);
     Opm::FieldPropsManager fp(deck, Opm::Phases{true, true, true}, grid, Opm::TableManager());
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_NOT_SUPPORTED, Opm::InputErrorAction::THROW_EXCEPTION);
-    BOOST_CHECK_THROW(Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard), Opm::OpmInputError);
+    BOOST_CHECK_THROW(Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard), Opm::OpmInputError);
 
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_NOT_SUPPORTED, Opm::InputErrorAction::IGNORE);
-    BOOST_CHECK_NO_THROW( Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard) );
+    BOOST_CHECK_NO_THROW( Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard) );
 }
 
 BOOST_AUTO_TEST_CASE(testwsegvalv)
@@ -647,7 +651,7 @@ BOOST_AUTO_TEST_CASE(testwsegvalv)
     Opm::FieldPropsManager fp(deck, Opm::Phases{true, true, true}, grid, Opm::TableManager());
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_INVALID, Opm::InputErrorAction::THROW_EXCEPTION);
     parseContext.update(Opm::ParseContext::SCHEDULE_COMPSEGS_NOT_SUPPORTED, Opm::InputErrorAction::THROW_EXCEPTION);
-    BOOST_CHECK_NO_THROW( Opm::Compsegs::processCOMPSEGS(compsegs, connection_set, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard));
+    BOOST_CHECK_NO_THROW( Opm::Compsegs::compsegsFromCOMPSEGSKeyword(compsegs, segment_set, Opm::ScheduleGrid(grid, fp, cells), parseContext, errorGuard));
 
     // checking the WSEGVALV segment
     const Opm::DeckKeyword wsegvalv = deck["WSEGVALV"].back();
