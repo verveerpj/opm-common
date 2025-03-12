@@ -71,6 +71,12 @@ namespace Opm {
                      const std::vector<Segment>& segments);
         explicit WellSegments(const DeckKeyword& keyword);
         void loadWELSEGS( const DeckKeyword& welsegsKeyword);
+        explicit WellSegments(double length_top,
+                              const std::vector<std::pair<double, double>>& intersections,
+                              double diameter);
+        void addWellSegmentsFromIntersections(double length_top,
+                                              const std::vector<std::pair<double, double>>& intersections,
+                                              double diameter);
 
         static WellSegments serializationTestObject();
 
