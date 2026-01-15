@@ -1045,9 +1045,9 @@ void ECLRegressionTest::results_smry()
                                             };
                                 };
 
-            keywords1.erase(std::remove_if(keywords1.begin(), keywords1.end(), make_remover(keywordsBlackList)), keywords1.end());
+            std::erase_if(keywords1, make_remover(keywordsBlackList));
             if (loadBaseRunData) {
-                keywords1.erase(std::remove_if(keywords1.begin(), keywords1.end(), make_remover(keywordsBlackListExtraRestart)), keywords1.end());
+                std::erase_if(keywords1, make_remover(keywordsBlackListExtraRestart));
             }
 
             std::cout << "\nChecking " << keywords1.size() << "  vectors  ... ";

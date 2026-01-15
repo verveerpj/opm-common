@@ -54,10 +54,7 @@ WelSegsSet::difference(const std::set<std::string>& compsegs,
                                    });
     };
 
-    difference.erase(std::remove_if(difference.begin(),
-                                    difference.end(), empty_conn),
-                     difference.end());
-
+    std::erase_if(difference, empty_conn);
     return difference;
 }
 
