@@ -209,7 +209,7 @@ public:
             if (numElem > N) {
                 data_.resize(numElem);
                 if (size_ > 0 && N > 0) {
-                    std::copy(smallBuf_.begin(), smallBuf_.begin() + size_, data_.begin());
+                    std::copy_n(smallBuf_.begin(), size_, data_.begin());
                 }
                 dataPtr_ = data_.data();
             } else if (numElem < size_) {

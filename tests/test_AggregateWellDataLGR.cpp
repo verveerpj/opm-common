@@ -3566,9 +3566,7 @@ BOOST_AUTO_TEST_CASE (Declared_GroupDataLGR)
         xgrp_g4.resize(nxgrpz_global, 0.0);
         xgrp_g5.resize(nxgrpz_global, 0.0);
         auto copy_xgrp = [nxgrpz_global](const auto& source, auto& dest, int start) {
-            std::copy(source.begin() + start,
-                      source.begin() + start + nxgrpz_global,
-                      dest.begin());
+            std::copy_n(source.begin() + start, nxgrpz_global, dest.begin());
         };
 
         // Filling  G1 to G4 Groups of  GLOBAL
