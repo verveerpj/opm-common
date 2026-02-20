@@ -83,9 +83,9 @@ std::vector<int> isInsideElement(const std::vector<T>& tpX, const std::vector<T>
         minX = *std::ranges::min_element(X[outerIndex]);
         minY = *std::ranges::min_element(Y[outerIndex]);
         minZ = *std::ranges::min_element(Z[outerIndex]);
-        maxX = *std::max_element(X[outerIndex].begin(), X[outerIndex].end());
-        maxY = *std::max_element(Y[outerIndex].begin(), Y[outerIndex].end());
-        maxZ = *std::max_element(Z[outerIndex].begin(), Z[outerIndex].end());
+        maxX = *std::ranges::max_element(X[outerIndex]);
+        maxY = *std::ranges::max_element(Y[outerIndex]);
+        maxZ = *std::ranges::max_element(Z[outerIndex]);
         pcX = std::accumulate(X[outerIndex].begin(), X[outerIndex].end(), 0.0)/8;
         pcY = std::accumulate(Y[outerIndex].begin(), Y[outerIndex].end(), 0.0)/8;
         pcZ = std::accumulate(Z[outerIndex].begin(), Z[outerIndex].end(), 0.0)/8;

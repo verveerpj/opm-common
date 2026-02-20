@@ -254,16 +254,14 @@ void ECLRegressionTest::printDeviationReport()
             std::cout << "\t" << iter.first << std::endl;
             std::cout << "\t\tFails for " << iter.second.size() << " entries" << std::endl;
             std::cout.precision(7);
-            double absErr = std::max_element(iter.second.begin(), iter.second.end(),
-                                             [](const Deviation& a, const Deviation& b)
-            {
-                return a.abs < b.abs;
-            })->abs;
-            double relErr = std::max_element(iter.second.begin(), iter.second.end(),
-                                             [](const Deviation& a, const Deviation& b)
-            {
-                return a.rel < b.rel;
-            })->rel;
+            const double absErr =
+                std::ranges::max_element(iter.second,
+                                         [](const Deviation& a, const Deviation& b)
+                                        { return a.abs < b.abs;})->abs;
+            const double relErr =
+                std::ranges::max_element(iter.second,
+                                         [](const Deviation& a, const Deviation& b)
+                                         { return a.rel < b.rel; })->rel;
             std::cout << "\t\tLargest absolute error: "
                       <<  std::scientific << absErr << std::endl;
             std::cout << "\t\tLargest relative error: "

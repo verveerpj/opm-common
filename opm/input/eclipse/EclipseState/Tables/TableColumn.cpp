@@ -159,12 +159,15 @@ namespace Opm {
     }
 
     double TableColumn::max( ) const {
-        if (hasDefault())
+        if (hasDefault()) {
             throw std::invalid_argument("Can not lookup elements in a column with defaulted values.");
-        if (m_values.size() > 0)
-            return *std::max_element( m_values.begin() , m_values.end());
-        else
+        }
+        if (m_values.size() > 0) {
+            return *std::ranges::max_element(m_values);
+        }
+        else {
             throw std::invalid_argument("Can not find max in empty column");
+        }
     }
 
 
@@ -207,7 +210,7 @@ namespace Opm {
             throw std::invalid_argument("Can not lookup elements in a column with defaulted values.");
 
         if (argValue >= max()) {
-            const auto max_iter = std::max_element( m_values.begin() , m_values.end());
+            const auto max_iter = std::ranges::max_element(m_values);
             const size_t max_index = max_iter - m_values.begin();
             return TableIndex( max_index , 1.0 );
         }

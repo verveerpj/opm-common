@@ -865,12 +865,10 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
             throw std::logic_error("Tried to get lowest connection from empty set");
         }
 
-        const auto max_iter = std::max_element(this->m_connections.begin(),
-                                               this->m_connections.end(),
-                                               [](const Connection& c1, const Connection& c2)
-                                               {
-                                                   return c1.depth() < c2.depth();
-                                               });
+        const auto max_iter =
+            std::ranges::max_element(this->m_connections,
+                                     [](const Connection& c1, const Connection& c2)
+                                     { return c1.depth() < c2.depth(); });
 
         return *max_iter;
     }

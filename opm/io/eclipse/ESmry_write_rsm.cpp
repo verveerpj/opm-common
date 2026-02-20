@@ -188,7 +188,7 @@ void ESmry::write_block(std::ostream& os,
     for (const auto& vector : vectors) {
         const auto& vector_data { this->get(vector) } ;
 
-        auto max = *std::max_element(vector_data.begin(), vector_data.end());
+        const auto max = *std::ranges::max_element(vector_data);
         // log10 for 0 is undefined and log10 for negative values yields nan.
         // We skip the scale factor in these cases to prevent undefined behavior
         int scale_factor {

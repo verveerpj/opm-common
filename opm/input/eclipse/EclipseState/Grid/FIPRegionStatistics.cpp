@@ -65,7 +65,7 @@ namespace {
 
         return regID.empty()
             ? -1
-            : *std::max_element(regID.begin(), regID.end());
+            : *std::ranges::max_element(regID);
     }
 
     std::vector<int> localMaxRegionID(const std::vector<std::string>& regSets,

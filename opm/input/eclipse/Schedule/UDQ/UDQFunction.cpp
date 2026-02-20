@@ -93,7 +93,7 @@ UDQSet UDQScalarFunction::UDQ_MAX(const UDQSet& arg)
         return UDQSet::empty("MAX");
     }
 
-    return UDQSet::scalar("MAX", *std::max_element(defined_values.begin(), defined_values.end()));
+    return UDQSet::scalar("MAX", *std::ranges::max_element(defined_values));
 }
 
 UDQSet UDQScalarFunction::SUM(const UDQSet& arg)
