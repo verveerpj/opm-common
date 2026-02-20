@@ -1129,7 +1129,7 @@ EclipseGrid::EclipseGrid(const Deck& deck, const int * actnum)
             if (dzv.size() != this->getNZ())
                 throw std::invalid_argument("DZV keyword should have exactly " + std::to_string( this->getNZ() ) + " elements");
             for (std::size_t k= 0; k < this->getNZ(); k++)
-                std::fill(dz.begin() + k*area, dz.begin() + (k+1)*area, dzv[k]);
+                std::fill_n(dz.begin() + k*area, area, dzv[k]);
         }
 
         if (tops.size() != (this->getNX() * this->getNY()))

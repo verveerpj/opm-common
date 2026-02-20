@@ -68,7 +68,7 @@ public:
     {
         init_(numElem);
 
-        std::fill(dataPtr_, dataPtr_ + size_, value);
+        std::fill_n(dataPtr_, size_, value);
     }
 
     //! copy constructor
