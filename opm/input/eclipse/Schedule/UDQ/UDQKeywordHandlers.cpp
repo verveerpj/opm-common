@@ -208,7 +208,7 @@ void handleUDT(HandlerContext& handlerContext)
     }
     const auto x_vals = points.getItem<ParserKeywords::UDT::INTERPOLATION_POINTS>().getData<double>();
 
-    if (!std::is_sorted(x_vals.begin(), x_vals.end())) {
+    if (!std::ranges::is_sorted(x_vals)) {
         throw OpmInputError("UDT: Interpolation points need to be given in ascending order",
                             handlerContext.keyword.location());
     }
