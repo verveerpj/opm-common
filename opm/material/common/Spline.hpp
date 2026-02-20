@@ -367,8 +367,8 @@ public:
 
         setNumSamples_(x.size());
 
-        std::copy(x.begin(), x.end(), xPos_.begin());
-        std::copy(y.begin(), y.end(), yPos_.begin());
+        std::ranges::copy(x, xPos_.begin());
+        std::ranges::copy(y, yPos_.begin());
 
         if (sortInputs)
             sortInput_();
@@ -561,8 +561,8 @@ public:
         assert(x.size() > 1);
 
         setNumSamples_(x.size());
-        std::copy(x.begin(), x.end(), xPos_.begin());
-        std::copy(y.begin(), y.end(), yPos_.begin());
+        std::ranges::copy(x, xPos_.begin());
+        std::ranges::copy(y, yPos_.begin());
 
         if (sortInputs)
             sortInput_();

@@ -47,11 +47,11 @@ appendNode(const std::array<T,3>& X, const std::array<T,3>& Y, const std::array<
     std::array<T,4> tX;
     std::array<T,4> tY;
     std::array<T,4> tZ;
-    std::copy(X.begin(), X.end(), tX.begin());
+    std::ranges::copy(X, tX.begin());
     tX[3]= xc;
-    std::copy(Y.begin(), Y.end(), tY.begin());
+    std::ranges::copy(Y, tY.begin());
     tY[3]= yc;
-    std::copy(Z.begin(), Z.end(), tZ.begin());
+    std::ranges::copy(Z, tZ.begin());
     tZ[3]= zc;
     return std::make_tuple(tX,tY,tZ);
 }

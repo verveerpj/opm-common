@@ -780,8 +780,7 @@ namespace { namespace SatFunc {
                         const auto& Sg = t.getSgColumn();
 
                         numActRows = Sg.size();
-                        std::copy(std::begin(Sg), std::end(Sg),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sg, linTable.column(tableID, primID, 0));
                     }
 
                     // Krg(Sg)
@@ -860,8 +859,7 @@ namespace { namespace SatFunc {
                         const auto& Sg = t.getSgColumn();
 
                         numActRows = Sg.size();
-                        std::copy(std::begin(Sg), std::end(Sg),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sg, linTable.column(tableID, primID, 0));
                     }
 
                     // Krg(Sg)
@@ -978,8 +976,7 @@ namespace { namespace SatFunc {
                         const auto& Sg = t.getSgColumn();
 
                         numActRows = Sg.size();
-                        std::copy(std::begin(Sg), std::end(Sg),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sg, linTable.column(tableID, primID, 0));
                     }
 
                     // Krg(Sg)
@@ -1062,8 +1059,7 @@ namespace { namespace SatFunc {
                         std::vector<double> Sg(std::rbegin(Sl), std::rend(Sl));
                         std::ranges::transform(Sg, Sg.begin(),
                                                [](double x){ return (1.0 - x); });
-                        std::copy(std::begin(Sg), std::end(Sg),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sg, linTable.column(tableID, primID, 0));
                     }
 
                     // Krg(Sg)
@@ -1207,8 +1203,7 @@ namespace { namespace SatFunc {
                         const auto& Sg = t.getSgColumn();
 
                         numActRows = Sg.size();
-                        std::copy(std::begin(Sg), std::end(Sg),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sg, linTable.column(tableID, primID, 0));
                     }
 
                     // Krg(Sg)
@@ -1331,8 +1326,7 @@ namespace { namespace SatFunc {
                             const auto& So = t.getSoColumn();
 
                             numActRows = So.size();
-                            std::copy(std::begin(So), std::end(So),
-                                      linTable.column(tableID, primID, 0));
+                            std::ranges::copy(So, linTable.column(tableID, primID, 0));
                         }
 
                         // Kro(So)
@@ -1481,7 +1475,7 @@ namespace { namespace SatFunc {
                         {
                             const auto& Sl = t.getSlColumn();
                             numActRows = Sl.size();
-                            std::copy(Sl.begin(), Sl.end(), linTable.column(tableID, primID, 0));
+                            std::ranges::copy(Sl, linTable.column(tableID, primID, 0));
                         }
 
                         // Kro(So)
@@ -2070,8 +2064,7 @@ namespace { namespace SatFunc {
                             const auto& So = sof3[0];
 
                             numActRows = So.size();
-                            std::copy(std::begin(So), std::end(So),
-                                      linTable.column(tableID, primID, 0));
+                            std::ranges::copy(So, linTable.column(tableID, primID, 0));
                         }
 
                         // Krow(So)
@@ -2156,8 +2149,7 @@ namespace { namespace SatFunc {
                             const auto& So = sof3[0];
 
                             numActRows = So.size();
-                            std::copy(std::begin(So), std::end(So),
-                                      linTable.column(tableID, primID, 0));
+                            std::ranges::copy(So, linTable.column(tableID, primID, 0));
                         }
 
                         // Krow(So)
@@ -2281,8 +2273,7 @@ namespace { namespace SatFunc {
                             const auto& So = t.getSoColumn();
 
                             numActRows = So.size();
-                            std::copy(std::begin(So), std::end(So),
-                                      linTable.column(tableID, primID, 0));
+                            std::ranges::copy(So, linTable.column(tableID, primID, 0));
                         }
 
                         // Krow(So)
@@ -2436,8 +2427,7 @@ namespace { namespace SatFunc {
                         const auto& Sw = t.getSwColumn();
 
                         numActRows = Sw.size();
-                        std::copy(std::begin(Sw), std::end(Sw),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sw, linTable.column(tableID, primID, 0));
                     }
 
                     // Krw(Sw)
@@ -2644,8 +2634,7 @@ namespace { namespace SatFunc {
                         const auto& Sw = t.getSwColumn();
 
                         numActRows = Sw.size();
-                        std::copy(std::begin(Sw), std::end(Sw),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sw, linTable.column(tableID, primID, 0));
                     }
 
                     // Krw(Sw)
@@ -2767,8 +2756,7 @@ namespace { namespace SatFunc {
                         const auto& Sw = t.getSwColumn();
 
                         numActRows = Sw.size();
-                        std::copy(std::begin(Sw), std::end(Sw),
-                                  linTable.column(tableID, primID, 0));
+                        std::ranges::copy(Sw, linTable.column(tableID, primID, 0));
                     }
 
                     // Krw(Sw)

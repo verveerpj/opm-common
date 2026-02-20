@@ -463,11 +463,9 @@ BOOST_AUTO_TEST_CASE (Constant_Function)
 
         auto y = std::vector<double>(x.size(), 1.25);
 
-        std::copy(x.begin(), x.end(),
-                  linTable.column(descr.tableID, descr.primID, 0));
+        std::ranges::copy(x, linTable.column(descr.tableID, descr.primID, 0));
 
-        std::copy(y.begin(), y.end(),
-                  linTable.column(descr.tableID, descr.primID, 1));
+        std::ranges::copy(y, linTable.column(descr.tableID, descr.primID, 1));
     }
 
     // Argument dependent symbol lookup.
@@ -515,11 +513,9 @@ BOOST_AUTO_TEST_CASE (Linear_Function)
 
         auto y = x;
 
-        std::copy(x.begin(), x.end(),
-                  linTable.column(descr.tableID, descr.primID, 0));
+        std::ranges::copy(x, linTable.column(descr.tableID, descr.primID, 0));
 
-        std::copy(y.begin(), y.end(),
-                  linTable.column(descr.tableID, descr.primID, 1));
+        std::ranges::copy(y, linTable.column(descr.tableID, descr.primID, 1));
     }
 
     // Argument dependent symbol lookup.
@@ -605,17 +601,10 @@ BOOST_AUTO_TEST_CASE (Nonlinear_Functions)
             1.839397205857212e-01,
         };
 
-        std::copy(x.begin(), x.end(),
-                  linTable.column(descr.tableID, descr.primID, 0));
-
-        std::copy(s.begin(), s.end(),
-                  linTable.column(descr.tableID, descr.primID, 1));
-
-        std::copy(c.begin(), c.end(),
-                  linTable.column(descr.tableID, descr.primID, 2));
-
-        std::copy(f.begin(), f.end(),
-                  linTable.column(descr.tableID, descr.primID, 3));
+        std::ranges::copy(x, linTable.column(descr.tableID, descr.primID, 0));
+        std::ranges::copy(s, linTable.column(descr.tableID, descr.primID, 1));
+        std::ranges::copy(c, linTable.column(descr.tableID, descr.primID, 2));
+        std::ranges::copy(f, linTable.column(descr.tableID, descr.primID, 3));
     }
 
     // Argument dependent symbol lookup.

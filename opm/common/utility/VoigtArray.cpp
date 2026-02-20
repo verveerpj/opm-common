@@ -32,7 +32,7 @@ template<class Array>
 VoigtContainer<T>::
 VoigtContainer(const Array& array)
 {
-    std::copy(array.begin(), array.end(), data_.begin());
+    std::ranges::copy(array, data_.begin());
 }
 
 template<class Scalar>
