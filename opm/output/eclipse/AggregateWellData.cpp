@@ -521,7 +521,7 @@ namespace {
             iWell[Ix::LastK]  = 0;
 
             if (!well.isMultiSegment() && (iWell[Ix::NConn] != 0)) {
-                const auto firstPos = std::find_if(conns.begin(), conns.end(), isRegularConn);
+                const auto firstPos = std::ranges::find_if(conns, isRegularConn);
 
                 const auto lastPos  = std::find_if(std::make_reverse_iterator(conns.end()),
                                                    std::make_reverse_iterator(conns.begin()),

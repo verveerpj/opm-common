@@ -58,9 +58,9 @@ const TracerConfig::TracerEntry& TracerConfig::operator[](std::size_t index) con
 }
 
 const TracerConfig::TracerEntry& TracerConfig::operator[](const std::string& name) const {
-    auto iter = std::find_if(this->tracers.begin(), this->tracers.end(), [&name](const TracerEntry& tracer) {
-            return tracer.name == name;
-        });
+    const auto iter = std::ranges::find_if(this->tracers,
+                                           [&name](const TracerEntry& tracer)
+                                           { return tracer.name == name; });
 
     if (iter == this->tracers.end())
         throw std::logic_error(fmt::format("No such tracer: {}", name));

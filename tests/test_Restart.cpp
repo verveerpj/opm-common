@@ -103,10 +103,9 @@ namespace {
                            const int          seqnum)
     {
         const auto list = rst.listOfRstArrays(seqnum);
-        const auto it = std::find_if(list.begin(),
-                                     list.end(),
-                                     [&kw](const auto& vec)
-                                     { return std::get<0>(vec) == kw; });
+        const auto it = std::ranges::find_if(list,
+                                             [&kw](const auto& vec)
+                                             { return std::get<0>(vec) == kw; });
         if (it != list.end()) {
             return *it;
         }

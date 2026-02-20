@@ -61,9 +61,7 @@ namespace {
         if (m_dataRecord)
             throw std::invalid_argument("Record is already marked as DataRecord - can not add items");
 
-        auto itr = std::find_if( this->m_items.begin(),
-                                 this->m_items.end(),
-                                 name_eq( item.name() ) );
+        const auto itr = std::ranges::find_if(this->m_items, name_eq(item.name()));
 
         if( itr != this->m_items.end() )
             throw std::invalid_argument("Itemname: " + item.name() + " already exists.");
@@ -113,9 +111,7 @@ namespace {
     }
 
     const ParserItem& ParserRecord::get( const std::string& name ) const {
-        auto itr = std::find_if( this->m_items.begin(),
-                                 this->m_items.end(),
-                                 name_eq( name ) );
+        const auto itr = std::ranges::find_if(this->m_items, name_eq(name));
 
         if( itr == this->m_items.end() )
             throw std::out_of_range( "No item '" + name + "'" );

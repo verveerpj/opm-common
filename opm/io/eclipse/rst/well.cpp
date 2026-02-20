@@ -276,9 +276,9 @@ Opm::RestartIO::RstWell::RstWell(const UnitSystem&          unit_system,
 const Opm::RestartIO::RstSegment&
 Opm::RestartIO::RstWell::segment(int segment_number) const
 {
-    auto iter = std::find_if(this->segments.begin(), this->segments.end(),
-                             [segment_number](const RstSegment& segment)
-                             { return segment.segment == segment_number; });
+    const auto iter = std::ranges::find_if(this->segments,
+                                           [segment_number](const RstSegment& segment)
+                                           { return segment.segment == segment_number; });
 
     if (iter == this->segments.end()) {
         throw std::invalid_argument("No such segment");

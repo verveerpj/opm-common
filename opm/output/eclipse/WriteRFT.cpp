@@ -174,11 +174,10 @@ namespace {
     findConnResults(const std::size_t                         cellIndex,
                     const std::vector<Opm::data::Connection>& xcon)
     {
-        auto pos = std::find_if(xcon.begin(), xcon.end(),
-                                [cellIndex](const Opm::data::Connection& xc)
-                                {
-                                    return xc.index == cellIndex;
-                                });
+        const auto pos =
+            std::ranges::find_if(xcon,
+                                 [cellIndex](const Opm::data::Connection& xc)
+                                 { return xc.index == cellIndex; });
 
         if (pos == xcon.end()) {
             return std::nullopt;

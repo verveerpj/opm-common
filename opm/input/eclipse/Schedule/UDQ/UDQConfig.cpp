@@ -585,11 +585,10 @@ namespace Opm {
 
     UDQInput UDQConfig::operator[](const std::size_t insert_index) const
     {
-        auto index_iter = std::find_if(this->input_index.begin(), this->input_index.end(),
-            [insert_index](const auto& name_index)
-        {
-            return name_index.second.insert_index == insert_index;
-        });
+        const auto index_iter =
+            std::ranges::find_if(this->input_index,
+                                 [insert_index](const auto& name_index)
+                                 { return name_index.second.insert_index == insert_index; });
 
         if (index_iter == this->input_index.end()) {
             throw std::invalid_argument("Insert index not recognized");

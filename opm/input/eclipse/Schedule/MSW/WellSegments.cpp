@@ -743,7 +743,8 @@ namespace Opm {
             const auto& head_segment = segments[head_index];
             if (segment_set.count(head_segment.outletSegment()) != 0) {
                 auto head_iter = std::find_if(std::next(segments.begin(), head_index), segments.end(),
-                                              [&segment_set] (const Segment& segment) { return (segment_set.count(segment.outletSegment()) == 0); });
+                                              [&segment_set] (const Segment& segment)
+                                              { return (segment_set.count(segment.outletSegment()) == 0); });
 
                 if (head_iter == segments.end())
                     throw std::logic_error("Loop detected in branch/segment structure");

@@ -780,11 +780,9 @@ template <>
 
 double efac( const std::vector<std::pair<std::string,double>>& eff_factors, const std::string& name)
 {
-    auto it = std::find_if(eff_factors.begin(), eff_factors.end(),
-        [&name](const std::pair<std::string, double>& elem)
-    {
-        return elem.first == name;
-    });
+    const auto it = std::ranges::find_if(eff_factors,
+                                         [&name](const auto& elem)
+                                         { return elem.first == name; });
 
     return (it != eff_factors.end()) ? it->second : 1.0;
 }
@@ -1211,12 +1209,9 @@ inline quantity ratel( const fn_args& args ) {
     for (const auto* conn_ptr : connections) {
         const size_t global_index = conn_ptr->global_index();
         const auto& conn_data =
-            std::find_if(well_data.connections.begin(),
-                         well_data.connections.end(),
-                [global_index](const Opm::data::Connection& cdata)
-            {
-                return cdata.index == global_index;
-            });
+            std::ranges::find_if(well_data.connections,
+                                 [global_index](const Opm::data::Connection& cdata)
+                                 { return cdata.index == global_index; });
 
         if (conn_data != well_data.connections.end()) {
             sum += conn_data->rates.get(phase, 0.0) * eff_fac;
@@ -1248,12 +1243,9 @@ inline quantity cpr( const fn_args& args ) {
 
     const auto& well_data = xwPos->second;
     const auto& connection =
-        std::find_if(well_data.connections.begin(),
-                     well_data.connections.end(),
-            [global_index](const Opm::data::Connection& c)
-        {
-            return c.index == global_index;
-        });
+        std::ranges::find_if(well_data.connections,
+                             [global_index](const Opm::data::Connection& c)
+                             { return c.index == global_index; });
 
     if (connection == well_data.connections.end())
         return zero;
@@ -1290,28 +1282,25 @@ inline quantity cratel( const fn_args& args ) {
     const auto& well_data = xwPos->second;
     const double eff_fac = efac(args.eff_factors, name);
 
-    double sum = 0;
+    double lsum = 0.0;
     const auto& connections = well->getConnections(*complnum);
     for (const auto& conn_ptr : connections) {
         const size_t global_index = conn_ptr->global_index();
         const auto& conn_data =
-            std::find_if(well_data.connections.begin(),
-                         well_data.connections.end(),
-                [global_index] (const Opm::data::Connection& cdata)
-            {
-                return cdata.index == global_index;
-            });
+            std::ranges::find_if(well_data.connections,
+                                 [global_index] (const Opm::data::Connection& cdata)
+                                 { return cdata.index == global_index; });
 
         if (conn_data != well_data.connections.end()) {
-            sum += conn_data->rates.get( phase, 0.0 ) * eff_fac;
+            lsum += conn_data->rates.get( phase, 0.0 ) * eff_fac;
         }
     }
 
     if (! injection) {
-        sum *= -1;
+        lsum *= -1;
     }
 
-    return { sum, unit };
+    return { lsum, unit };
 }
 
 template <Opm::data::ConnectionFracturing::Statistics Opm::data::ConnectionFracturing::* q,
@@ -1337,12 +1326,9 @@ quantity connFracStatistics(const fn_args& args)
 
     const auto& well_data = xwPos->second;
     const auto connPos =
-        std::find_if(well_data.connections.begin(),
-                     well_data.connections.end(),
-            [global_index](const Opm::data::Connection& c)
-        {
-            return c.index == global_index;
-        });
+        std::ranges::find_if(well_data.connections,
+                             [global_index](const Opm::data::Connection& c)
+                             { return c.index == global_index; });
 
     if ((connPos == well_data.connections.end()) ||
         (connPos->fract.numCells == 0))
@@ -1393,12 +1379,9 @@ inline quantity crate( const fn_args& args ) {
 
     const auto& well_data = xwPos->second;
     const auto& completion =
-        std::find_if(well_data.connections.begin(),
-                     well_data.connections.end(),
-            [global_index](const Opm::data::Connection& c)
-        {
-            return c.index == global_index;
-        });
+        std::ranges::find_if(well_data.connections,
+                             [global_index](const Opm::data::Connection& c)
+                             { return c.index == global_index; });
 
     if (completion == well_data.connections.end())
         return zero;
@@ -1437,12 +1420,9 @@ quantity crate_resv( const fn_args& args ) {
 
     const auto& well_data = xwPos->second;
     const auto completion =
-        std::find_if(well_data.connections.begin(),
-                     well_data.connections.end(),
-            [global_index](const Opm::data::Connection& c)
-        {
-            return c.index == global_index;
-        });
+        std::ranges::find_if(well_data.connections,
+                             [global_index](const Opm::data::Connection& c)
+                             { return c.index == global_index; });
 
     if (completion == well_data.connections.end())
         return zero;
@@ -1588,11 +1568,10 @@ inline quantity trans_factors ( const fn_args& args ) {
     // Like connection rate we need to look up a connection with offset 0.
     const size_t global_index = args.num - 1;
     const auto& connections = xwPos->second.connections;
-    auto connPos = std::find_if(connections.begin(), connections.end(),
-        [global_index](const Opm::data::Connection& c)
-    {
-        return c.index == global_index;
-    });
+    const auto connPos =
+            std::ranges::find_if(connections,
+                                 [global_index](const Opm::data::Connection& c)
+                                 { return c.index == global_index; });
 
     if (connPos == connections.end())
         // No dynamic results for this connection.
@@ -2229,12 +2208,10 @@ inline quantity connection_productivity_index(const fn_args& args)
     const auto global_index = static_cast<std::size_t>(args.num) - 1;
 
     const auto& xcon = xwPos->second.connections;
-    const auto& completion =
-        std::find_if(xcon.begin(), xcon.end(),
-            [global_index](const Opm::data::Connection& c)
-        {
-            return c.index == global_index;
-        });
+    const auto completion =
+        std::ranges::find_if(xcon,
+                             [global_index](const Opm::data::Connection& c)
+                             { return c.index == global_index; });
 
     if (completion == xcon.end())
         return zero;
@@ -4831,11 +4808,9 @@ namespace Evaluator {
         // Check for tracer names twice to allow for tracers starting with S or F
         auto istart = 4;
         auto tracer_name = normKw.substr(istart);
-        auto trPos = std::find_if(tracers.begin(), tracers.end(),
-                                  [&tracer_name](const auto& tracer)
-                                  {
-                                      return tracer.name == tracer_name;
-                                  });
+        auto trPos = std::ranges::find_if(tracers,
+                                          [&tracer_name](const auto& tracer)
+                                          { return tracer.name == tracer_name; });
 
         if (trPos == tracers.end()) {
             if ((normKw[4] == 'F') || (normKw[4] == 'S'))
@@ -4843,10 +4818,9 @@ namespace Evaluator {
             else
                 return false;
             tracer_name = normKw.substr(istart);
-            trPos = std::find_if(tracers.begin(), tracers.end(),
-                                    [&tracer_name](const auto& tracer)
-                                    {
-                                        return tracer.name == tracer_name;
+            trPos = std::ranges::find_if(tracers,
+                                         [&tracer_name](const auto& tracer)
+                                         {       return tracer.name == tracer_name;
                                     });
 
             if (trPos == tracers.end())

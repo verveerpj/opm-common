@@ -691,11 +691,9 @@ void RstState::add_wlist(const std::vector<std::string>& zwls,
 
 const RstWell& RstState::get_well(const std::string& wname) const
 {
-    const auto well_iter = std::find_if(this->wells.begin(),
-                                        this->wells.end(),
-                                        [&wname] (const auto& well) {
-                                            return well.name == wname;
-                                        });
+    const auto well_iter = std::ranges::find_if(this->wells,
+                                                [&wname] (const auto& well)
+                                                { return well.name == wname; });
     if (well_iter == this->wells.end())
         throw std::out_of_range("No such well: " + wname);
 

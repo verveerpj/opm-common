@@ -524,12 +524,9 @@ The cell ({},{},{}) in well {} is not active and the connection will be ignored)
             ctf_props.static_dfac_corr_coeff =
                 staticForchheimerCoefficient(ctf_props, props->poro, wdfac);
 
-            auto prev = std::find_if(this->m_connections.begin(),
-                                     this->m_connections.end(),
-                                     [I, J, k](const Connection& c)
-                                     {
-                                         return c.sameCoordinate(I, J, k);
-                                     });
+            const auto prev = std::ranges::find_if(this->m_connections,
+                                                  [I, J, k](const Connection& c)
+                                                  { return c.sameCoordinate(I, J, k); });
 
             if (prev == this->m_connections.end()) {
                 const std::size_t noConn = this->m_connections.size();
@@ -769,8 +766,8 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
                 ctf_props.Ke = std::sqrt(K[0] * K[1]);
             }
 
-            auto prev = std::find_if(this->m_connections.begin(),
-                                     this->m_connections.end(),
+            const auto prev =
+                std::ranges::find_if(this->m_connections,
                                      [&ijk](const Connection& c)
                                      { return c.sameCoordinate(ijk[0], ijk[1], ijk[2]); });
 
@@ -902,9 +899,9 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
     const Connection& WellConnections::getFromGlobalIndex(std::size_t global_index) const
     {
         auto conn_iter =
-            std::find_if(this->begin(), this->end(),
-                         [global_index] (const Connection& conn)
-                         { return conn.global_index() == global_index; });
+            std::ranges::find_if(*this,
+                                 [global_index] (const Connection& conn)
+                                 { return conn.global_index() == global_index; });
 
         if (conn_iter == this->end()) {
             throw std::logic_error(fmt::format("No connection with global index {}", global_index));
@@ -927,9 +924,9 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
     Connection* WellConnections::maybeGetFromGlobalIndex(const std::size_t global_index)
     {
         auto conn_iter =
-            std::find_if(this->begin(), this->end(),
-                         [global_index] (const Connection& conn)
-                         { return conn.global_index() == global_index; });
+            std::ranges::find_if(*this,
+                                 [global_index] (const Connection& conn)
+                                 { return conn.global_index() == global_index; });
 
         if (conn_iter == this->end()) {
             return nullptr;
@@ -1081,11 +1078,10 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
     getCompletionNumberFromGlobalConnectionIndex(const WellConnections& connections,
                                                  const std::size_t      global_index)
     {
-        auto connPos = std::find_if(connections.begin(), connections.end(),
-            [global_index](const Connection& conn)
-        {
-            return conn.global_index() == global_index;
-        });
+        const auto connPos =
+            std::ranges::find_if(connections,
+                                 [global_index](const Connection& conn)
+                                 { return conn.global_index() == global_index; });
 
         if (connPos == connections.end()) {
             // No connection exists with the requisite 'global_index'

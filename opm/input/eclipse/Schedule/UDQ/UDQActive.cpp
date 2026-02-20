@@ -459,12 +459,12 @@ bool Opm::UDQActive::operator==(const UDQActive& data) const
 void Opm::UDQActive::constructOutputRecords() const
 {
     for (const auto& input_record : this->input_data) {
-        auto it = std::find_if(this->output_data.begin(), this->output_data.end(),
-                               [&input_record](const auto& output_record)
-                               {
-                                   return (output_record.udq     == input_record.udq)
-                                       && (output_record.control == input_record.control);
-                               });
+        auto it = std::ranges::find_if(this->output_data,
+                                       [&input_record](const auto& output_record)
+                                       {
+                                           return (output_record.udq     == input_record.udq)
+                                               && (output_record.control == input_record.control);
+                                       });
 
         if (it != this->output_data.end()) {
             ++it->use_count;

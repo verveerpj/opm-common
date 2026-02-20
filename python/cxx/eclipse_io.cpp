@@ -229,14 +229,16 @@ size_t get_array_index(const std::vector<EclEntry>& array_list, const std::strin
 {
     size_t cidx = 0;
 
-    auto it = std::find_if(array_list.begin(), array_list.end(),
-                           [&cidx, &array_name, occurence](const EclEntry& entry)
-                           {
-                              if (std::get<0>(entry) == array_name)
-                                  ++cidx;
+    const auto it =
+        std::ranges::find_if(array_list,
+                             [&cidx, &array_name, occurence](const EclEntry& entry)
+                             {
+                                 if (std::get<0>(entry) == array_name) {
+                                     ++cidx;
+                                 }
 
-                              return cidx == occurence + 1;
-                           });
+                                 return cidx == occurence + 1;
+                             });
 
     return std::distance(array_list.begin(), it);
 }
