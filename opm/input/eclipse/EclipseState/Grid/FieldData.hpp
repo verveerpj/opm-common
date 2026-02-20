@@ -130,12 +130,12 @@ namespace Opm::Fieldprops {
             // Object is "valid" if the 'value_status' of every element is
             // neither uninitialised nor empty.
             return this->all_set =
-                std::none_of(this->value_status.begin(), this->value_status.end(),
-                             [](const value::status& status)
-                             {
-                                 return (status == value::status::uninitialized)
-                                     || (status == value::status::empty_default);
-                             });
+                std::ranges::none_of(this->value_status,
+                                     [](const value::status& status)
+                                     {
+                                         return (status == value::status::uninitialized)
+                                             || (status == value::status::empty_default);
+                                     });
         }
 
         bool valid_default() const
