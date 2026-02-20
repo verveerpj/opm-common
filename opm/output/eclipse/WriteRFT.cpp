@@ -805,13 +805,10 @@ namespace {
         std::ranges::sort(this->ix_, std::forward<Cmp>(cmp));
 
         // Sort must respect binId(i1) <= binId(i2)
-        auto inconsistentId =
-            std::adjacent_find(this->ix_.begin(),
-                               this->ix_.end(),
-                [&binId](const int i1, const int i2)
-            {
-                return binId(i1) > binId(i2);
-            });
+        const auto inconsistentId =
+            std::ranges::adjacent_find(this->ix_,
+                                       [&binId](const int i1, const int i2)
+                                       { return binId(i1) > binId(i2); });
 
         if (inconsistentId != this->ix_.end()) {
             throw std::invalid_argument {
