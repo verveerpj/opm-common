@@ -129,11 +129,9 @@ candidateWells(const std::vector<std::string>& allWells) const
     auto candidates = std::vector<std::string>{};
     candidates.reserve(allWells.size());
 
-    std::copy_if(allWells.begin(), allWells.end(), std::back_inserter(candidates),
-                 [this](const std::string& well)
-                 {
-                     return this->mswInputData_.get().wells(well).isMultiSegment();
-                 });
+    std::ranges::copy_if(allWells, std::back_inserter(candidates),
+                         [this](const std::string& well)
+                         { return this->mswInputData_.get().wells(well).isMultiSegment(); });
 
     return candidates;
 }

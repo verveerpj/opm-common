@@ -441,9 +441,8 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
     {
         auto noSeg = std::vector<Opm::Connection>{};
 
-        std::copy_if(new_connection_set.begin(), new_connection_set.end(),
-                     std::back_inserter(noSeg),
-                     [](const auto& conn) { return !conn.attachedToSegment(); });
+        std::ranges::copy_if(new_connection_set, std::back_inserter(noSeg),
+                             [](const auto& conn) { return !conn.attachedToSegment(); });
 
         if (noSeg.empty()) {
             return;

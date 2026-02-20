@@ -82,18 +82,14 @@ namespace {
             const auto reqObj = udqs.define(define).requiredObjects();
 
             auto missingWells = std::vector<std::string>{};
-            std::copy_if(reqObj.wells.begin(),
-                         reqObj.wells.end(),
-                         std::back_inserter(missingWells),
-                         [&ctx](const auto& reqWellPatt)
-                         { return !ctx.hasWell(reqWellPatt); });
+            std::ranges::copy_if(reqObj.wells, std::back_inserter(missingWells),
+                                 [&ctx](const auto& reqWellPatt)
+                                 { return !ctx.hasWell(reqWellPatt); });
 
             auto missingGroups = std::vector<std::string>{};
-            std::copy_if(reqObj.groups.begin(),
-                         reqObj.groups.end(),
-                         std::back_inserter(missingGroups),
-                         [&ctx](const auto &reqGrpPatt)
-                         { return !ctx.hasGroup(reqGrpPatt); });
+            std::ranges::copy_if(reqObj.groups, std::back_inserter(missingGroups),
+                                 [&ctx](const auto &reqGrpPatt)
+                                 { return !ctx.hasGroup(reqGrpPatt); });
 
             if (missingWells.empty() && missingGroups.empty()) {
                 // No missing wells and no missing groups.  This is fine.

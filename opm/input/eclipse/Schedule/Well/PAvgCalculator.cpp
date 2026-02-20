@@ -642,8 +642,8 @@ void PAvgCalculator<Scalar>::pruneInactiveWBPCells(const std::vector<bool>& isAc
 
     auto activeIx = std::vector<ContrIndexType>{};
     activeIx.reserve(allIx.size());
-    std::copy_if(allIx.begin(), allIx.end(), std::back_inserter(activeIx),
-                 [&isActive](const auto i) { return isActive[i]; });
+    std::ranges::copy_if(allIx, std::back_inserter(activeIx),
+                         [&isActive](const auto i) { return isActive[i]; });
 
     if (activeIx.size() == allIx.size()) {
         // All cells active.  Nothing else to do here.
@@ -829,12 +829,9 @@ void PAvgCalculator<Scalar>::pruneInactiveConnections(const std::vector<bool>& i
         auto keepOpen = std::vector<typename std::vector<PAvgConnection>::size_type>{};
         keepOpen.reserve(this->openConns_.size());
 
-        std::copy_if(this->openConns_.begin(),this->openConns_.end(),
-                     std::back_inserter(keepOpen),
-                     [this, &isActive](const auto& openConn)
-                     {
-                         return isActive[this->connections_[openConn].cell];
-                     });
+        std::ranges::copy_if(this->openConns_, std::back_inserter(keepOpen),
+                             [this, &isActive](const auto& openConn)
+                             { return isActive[this->connections_[openConn].cell]; });
 
         this->openConns_.swap(keepOpen);
     }

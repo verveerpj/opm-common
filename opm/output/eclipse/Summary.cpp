@@ -5602,10 +5602,9 @@ namespace {
         auto extraKeys = std::vector<std::string>{};
         extraKeys.reserve(summary_keys.size());
 
-        std::copy_if(summary_keys.begin(), summary_keys.end(),
-                     std::back_inserter(extraKeys),
-                     [](const std::string& key)
-                     { return ! Opm::TimeService::valid_month(key); });
+        std::ranges::copy_if(summary_keys, std::back_inserter(extraKeys),
+                             [](const std::string& key)
+                             { return ! Opm::TimeService::valid_month(key); });
 
         const auto newNodes = smcfg
             .registerRequisiteUDQorActionSummaryKeys(extraKeys, es, sched);

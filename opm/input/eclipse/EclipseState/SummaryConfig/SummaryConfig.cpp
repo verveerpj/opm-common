@@ -2284,10 +2284,9 @@ SummaryConfig::keywords(const std::string& keywordPattern) const
 {
     auto kw_list = keyword_list{};
 
-    std::copy_if(this->m_keywords.begin(), this->m_keywords.end(),
-                 std::back_inserter(kw_list),
-                 [&keywordPattern](const auto& kw)
-                 { return shmatch(keywordPattern, kw.keyword()); });
+    std::ranges::copy_if(this->m_keywords, std::back_inserter(kw_list),
+                         [&keywordPattern](const auto& kw)
+                         { return shmatch(keywordPattern, kw.keyword()); });
 
     return kw_list;
 }

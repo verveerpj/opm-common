@@ -220,11 +220,9 @@ Opm::WellMatcher::wells(const std::string& pattern) const
         auto names = std::vector<std::string> {};
         names.reserve(this->m_well_order->size());
 
-        std::copy_if(this->m_well_order->begin(),
-                     this->m_well_order->end(),
-                     std::back_inserter(names),
-                     [&patt](const auto& wname)
-                     { return shmatch(patt, wname); });
+        std::ranges::copy_if(*this->m_well_order, std::back_inserter(names),
+                             [&patt](const auto& wname)
+                             { return shmatch(patt, wname); });
 
         names.shrink_to_fit();
         return names;

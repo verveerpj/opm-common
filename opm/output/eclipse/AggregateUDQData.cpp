@@ -842,13 +842,12 @@ namespace {
             auto msWells = std::vector<std::string>{};
             msWells.reserve(allWells.size());
 
-            std::copy_if(allWells.begin(), allWells.end(),
-                         std::back_inserter(msWells),
-                         [&scheduleBlock](const std::string& wname)
-                         {
-                             auto wptr = scheduleBlock.wells.get_ptr(wname);
-                             return (wptr != nullptr) && wptr->isMultiSegment();
-                         });
+            std::ranges::copy_if(allWells, std::back_inserter(msWells),
+                                 [&scheduleBlock](const std::string& wname)
+                                 {
+                                     auto wptr = scheduleBlock.wells.get_ptr(wname);
+                                     return (wptr != nullptr) && wptr->isMultiSegment();
+                                 });
 
             return msWells;
         }

@@ -1413,8 +1413,8 @@ std::vector<std::string> ESmry::keywordList(const std::string& pattern) const
 {
     std::vector<std::string> list;
 
-    std::copy_if(keyword.begin(), keyword.end(), std::back_inserter(list),
-                 [&pattern](const auto& key) { return shmatch(pattern, key); });
+    std::ranges::copy_if(keyword, std::back_inserter(list),
+                         [&pattern](const auto& key) { return shmatch(pattern, key); });
     return list;
 }
 
