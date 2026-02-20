@@ -329,45 +329,48 @@ bool cmp(const ESmry& smry, const ERsm& rsm) {
         }
     }
 
-    return std::all_of(smry.summaryNodeList().begin(), smry.summaryNodeList().end(),
-                       [&rsm, &smry](const auto& node) {
-        const auto& key = node.unique_key();
+    return std::ranges::all_of(
+        smry.summaryNodeList(),
+        [&rsm, &smry](const auto& node)
+        {
+            const auto& key = node.unique_key();
 
-        if (key == "TIME" || key == "DAY" || key == "MONTH" || key == "YEAR") {
-            return true;
-        }
+            if (key == "TIME" || key == "DAY" || key == "MONTH" || key == "YEAR") {
+                return true;
+            }
 
-        /*
-          The ESmry class and the ERsm class treat block vector keys
-          differently, the ESmry class uses only the key Bxxx:i,j,k whereas the
-          ERsm class uses only the key Bxxxx:g. Therefor the ESmry lookup is
-          based on nodes, whereas the ERsm lookup is based on key.
-        */
-        const auto& smry_vector = smry.get(node);
-        const auto& rsm_vector = rsm.get(key);
-        for (std::size_t index = 0; index < smry_vector.size(); index++) {
-            const auto smry_value = static_cast<double>(smry_vector[index]);
-            const auto rsm_value = rsm_vector[index];
-            const double diff = std::fabs(smry_value - rsm_value);
-            if (std::fabs(rsm_value) < 1e-3) {
-                const double zero_eps = 1e-4;
-                if (diff > zero_eps) {
-                    fmt::print(stderr, "time_index: {}  key: {}  summary: {}   rsm: {}\n", index, key, smry_value, rsm_value);
-                    return false;
-                }
-            } else {
-                const double eps  = 5e-5;
-                const double sum = std::fabs(smry_value) + std::fabs(rsm_value);
+                   // The ESmry class and the ERsm class treat block vector keys
+            // differently, the ESmry class uses only the key Bxxx:i,j,k whereas the
+            // ERsm class uses only the key Bxxxx:g. Therefor the ESmry lookup is
+            // based on nodes, whereas the ERsm lookup is based on key.
+            const auto& smry_vector = smry.get(node);
+            const auto& rsm_vector = rsm.get(key);
+            for (std::size_t index = 0; index < smry_vector.size(); index++) {
+                const auto smry_value = static_cast<double>(smry_vector[index]);
+                const auto rsm_value = rsm_vector[index];
+                const double diff = std::fabs(smry_value - rsm_value);
+                if (std::fabs(rsm_value) < 1e-3) {
+                    const double zero_eps = 1e-4;
+                    if (diff > zero_eps) {
+                        fmt::print(stderr, "time_index: {}  key: {}  summary: {}   rsm: {}\n",
+                                   index, key, smry_value, rsm_value);
+                        return false;
+                    }
+                } else {
+                    const double eps  = 5e-5;
+                    const double sum = std::fabs(smry_value) + std::fabs(rsm_value);
 
-                if (diff > eps * std::max(1.0, sum)) {
-                    fmt::print(stderr, "time_index: {}  key: {}  summary: {}   rsm: {}\n", index, key, smry_value, rsm_value);
-                    return false;
+                    if (diff > eps * std::max(1.0, sum)) {
+                        fmt::print(stderr, "time_index: {}  key: {}  summary: {}   rsm: {}\n",
+                                   index, key, smry_value, rsm_value);
+                        return false;
+                    }
                 }
             }
-        }
 
-        return true;
-    });
+            return true;
+        }
+    );
 }
 
 }

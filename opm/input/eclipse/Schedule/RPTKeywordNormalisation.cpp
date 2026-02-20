@@ -68,7 +68,7 @@ namespace {
     {
         return {
             std::ranges::any_of(deckItems, isInteger),
-            ! std::all_of(deckItems.begin(), deckItems.end(), isInteger)
+            ! std::ranges::all_of(deckItems, isInteger)
         };
     }
 

@@ -117,9 +117,9 @@ namespace {
     bool allBlank(std::string_view s)
     {
         return s.empty() ||
-            std::all_of(s.begin(), s.end(),
-                        [](const unsigned char c)
-                        { return std::isspace(c); });
+            std::ranges::all_of(s,
+                                [](const unsigned char c)
+                                { return std::isspace(c); });
     }
 
     // Trim initial "FIP" prefix

@@ -939,10 +939,9 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
             return false;
         }
 
-        return std::all_of(this->m_connections.begin(),
-                           this->m_connections.end(),
-                           [](const Connection& c)
-                           { return c.state() == Connection::State::SHUT; });
+        return std::ranges::all_of(this->m_connections,
+                                   [](const Connection& c)
+                                   { return c.state() == Connection::State::SHUT; });
     }
 
     void WellConnections::order()

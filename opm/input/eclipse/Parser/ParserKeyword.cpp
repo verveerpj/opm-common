@@ -444,9 +444,9 @@ std::string KeywordSize::construct() const
         if( name.length() < 2 ) return false;
         if( !std::isalpha( name[0] ) ) return false;
 
-        const auto ok = []( char c ) { return std::isalnum( c ) || c == '_'; };
+        const auto ok = [](char c) { return std::isalnum( c ) || c == '_'; };
 
-        return std::all_of( name.begin() + 1, name.end(), ok );
+        return std::all_of(name.begin() + 1, name.end(), ok);
     }
 
 
@@ -455,11 +455,12 @@ std::string KeywordSize::construct() const
         if( !validNameStart( name ) )
             return false;
 
-        const auto valid = []( char c ) {
+        const auto valid = [](char c)
+        {
             return std::isalnum( c ) || c == '-' || c == '_' || c == '+';
         };
 
-        return std::all_of( name.begin() + 1, name.end(), valid );
+        return std::all_of(name.begin() + 1, name.end(), valid);
     }
 
     bool ParserKeyword::hasMultipleDeckNames() const {

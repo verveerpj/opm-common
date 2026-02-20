@@ -140,11 +140,9 @@ namespace Opm::Fieldprops {
 
         bool valid_default() const
         {
-            return std::all_of(this->value_status.begin(), this->value_status.end(),
-                               [](const value::status& status)
-                               {
-                                   return status == value::status::valid_default;
-                               });
+            return std::ranges::all_of(this->value_status,
+                                       [](const value::status& status)
+                                       { return status == value::status::valid_default; });
         }
 
         void compress(const std::vector<bool>& active_map)
