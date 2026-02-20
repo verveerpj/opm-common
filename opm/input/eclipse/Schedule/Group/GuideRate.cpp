@@ -473,11 +473,10 @@ void Opm::GuideRate::updateGuideRateExpiration(const double      sim_time,
 
     // Get previous general update time--earliest 'curr.sim_time' in
     // existing collection.
-    auto last_update = std::min_element(this->values.begin(), this->values.end(),
-        [&curr_sim_time](const auto& gr1, const auto& gr2)
-    {
-        return curr_sim_time(gr1) < curr_sim_time(gr2);
-    });
+    const auto last_update =
+        std::ranges::min_element(this->values,
+                                 [&curr_sim_time](const auto& gr1, const auto& gr2)
+                                 { return curr_sim_time(gr1) < curr_sim_time(gr2); });
 
     const auto update_delay = config.model().update_delay();
     this->guide_rates_expired =

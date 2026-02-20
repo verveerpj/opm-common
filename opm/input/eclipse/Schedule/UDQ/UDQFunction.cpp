@@ -83,7 +83,7 @@ UDQSet UDQScalarFunction::UDQ_MIN(const UDQSet& arg)
         return UDQSet::empty("MIN");
     }
 
-    return UDQSet::scalar("MIN", *std::min_element(defined_values.begin(), defined_values.end()));
+    return UDQSet::scalar("MIN", *std::ranges::min_element(defined_values));
 }
 
 UDQSet UDQScalarFunction::UDQ_MAX(const UDQSet& arg)
