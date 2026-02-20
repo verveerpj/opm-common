@@ -131,10 +131,10 @@ void ECLRegressionTest::compareFloatingPointVectors(const std::vector<T>& t1, co
                                            keyword, reference, t1.size(), t2.size()));
     }
 
-    auto it = std::find(keywordDisallowNegatives.begin(), keywordDisallowNegatives.end(), keyword);
+    auto it = std::ranges::find(keywordDisallowNegatives, keyword);
     bool allowNegatives = it == keywordDisallowNegatives.end() ? true : false;
 
-    it = std::find(keywordsStrictTol.begin(), keywordsStrictTol.end(), keyword);
+    it = std::ranges::find(keywordsStrictTol, keyword);
     bool strictTol = it != keywordsStrictTol.end() ? true : false;
 
     for (size_t i = 0; i < t1.size(); i++) {
@@ -290,7 +290,7 @@ void ECLRegressionTest::compareKeywords(const std::vector<std::string> &keywords
     } else {
         int extraKeywordsFirstFile = 0;
         for (auto& keyword : keywords1) {
-            auto it1 = std::find(keywords2.begin(), keywords2.end(), keyword);
+            const auto it1 = std::ranges::find(keywords2, keyword);
             if (it1 == keywords2.end()) {
                 extraKeywordsFirstFile++;
                 std::cout << "Keyword " << keyword << " missing in second file " << std::endl;
@@ -327,8 +327,8 @@ void ECLRegressionTest::checkSpecificKeyword(std::vector<std::string>& keywords1
                                              std::vector<eclArrType>& arrayType2,
                                              const std::string& reference)
 {
-    auto search1 = std::find(keywords1.begin(), keywords1.end(), specificKeyword);
-    auto search2 = std::find(keywords2.begin(), keywords2.end(), specificKeyword);
+    const auto search1 = std::ranges::find(keywords1, specificKeyword);
+    const auto search2 = std::ranges::find(keywords2, specificKeyword);
 
     if (search1 == keywords1.end() && search2 == keywords2.end()) {
         const std::string msg =
@@ -675,8 +675,8 @@ void ECLRegressionTest::results_init()
             }
 
             for (size_t i = 0; i < keywords1.size(); i++) {
-                auto it1 = std::find(keywords2.begin(), keywords2.end(), keywords1[i]);
-                if (it1 == keywords2.end() and acceptExtraKeywordsBoth) {
+                const auto it1 = std::ranges::find(keywords2, keywords1[i]);
+                if (it1 == keywords2.end() && acceptExtraKeywordsBoth) {
                     continue;
                 }
                 int ind2 = std::distance(keywords2.begin(),it1);
@@ -689,7 +689,7 @@ void ECLRegressionTest::results_init()
                                           keywords1[i]));
                 }
 
-                auto it = std::find(keywordsBlackList.begin(), keywordsBlackList.end(), keywords1[i]);
+                const auto it = std::ranges::find(keywordsBlackList, keywords1[i]);
 
                 if (it != keywordsBlackList.end()){
                     std::cout << "Skipping  " << keywords1[i] << std::endl;
@@ -763,8 +763,8 @@ void ECLRegressionTest::results_rst()
         deviations.clear();
 
         if (specificSequence > -1) {
-            auto search1 = std::find(seqnums1.begin(), seqnums1.end(), specificSequence);
-            auto search2 = std::find(seqnums2.begin(), seqnums2.end(), specificSequence);
+            const auto search1 = std::ranges::find(seqnums1, specificSequence);
+            const auto search2 = std::ranges::find(seqnums2, specificSequence);
 
             if (search1 == seqnums1.end()) {
                 OPM_THROW(std::runtime_error,
@@ -846,11 +846,13 @@ void ECLRegressionTest::results_rst()
                 for (size_t i = 0; i < keywords1.size(); i++) {
                     if (keywords1[i] == "PRESSURE" ||
                         keywords1[i] == "SWAT" ||
-                        keywords1[i] =="SGAS") {
-                        auto search2 = std::find(keywords2.begin(), keywords2.end(), keywords1[i]);
+                        keywords1[i] =="SGAS")
+                    {
+                        const auto search2 = std::ranges::find(keywords2, keywords1[i]);
                         if (search2 != keywords2.end()) {
                             keywords.push_back(keywords1[i]);
-                        } else if (acceptExtraKeywordsBoth) {
+                        }
+                        else if (acceptExtraKeywordsBoth) {
                             continue;
                         }
                     }
@@ -876,7 +878,7 @@ void ECLRegressionTest::results_rst()
                     //if (keywords.count(keywords1[i]) == 0)
                     //    continue;
 
-                    auto it1 = std::find(keywords2.begin(), keywords2.end(), keywords1[i]);
+                    const auto it1 = std::ranges::find(keywords2, keywords1[i]);
                     if (it1 == keywords2.end() and acceptExtraKeywordsBoth) {
                         continue;
                     }
@@ -891,7 +893,7 @@ void ECLRegressionTest::results_rst()
                                               keywords1[i], seqn));
                     }
 
-                    auto it = std::find(keywordsBlackList.begin(), keywordsBlackList.end(), keywords1[i]);
+                    const auto it = std::ranges::find(keywordsBlackList, keywords1[i]);
 
                     if (it != keywordsBlackList.end()){
                         std::cout << "Skipping  " << keywords1[i] << std::endl;
@@ -995,7 +997,7 @@ void ECLRegressionTest::results_smry()
                 };
 
                 const auto p = kw.find_first_of(':');
-                return std::find(kwlist.begin(), kwlist.end(), kw.substr(0, p)) != kwlist.end();
+                return std::ranges::find(kwlist, kw.substr(0, p)) != kwlist.end();
             };
 
             std::vector<std::string> keywords;
@@ -1003,7 +1005,7 @@ void ECLRegressionTest::results_smry()
             for (const auto& kw : keywords1) {
                 if (! isIntegrationKw(kw)) { continue; }
 
-                auto search2 = std::find(keywords2.begin(), keywords2.end(), kw);
+                const auto search2 = std::ranges::find(keywords2, kw);
                 if (search2 != keywords2.end()) {
                     keywords.push_back(kw);
                 } else if (acceptExtraKeywordsBoth) {
@@ -1037,7 +1039,7 @@ void ECLRegressionTest::results_smry()
             auto make_remover = [&blackListed](const std::vector<std::string>& _blacklist) {
                                     return [&blacklist = _blacklist, &blackListed](const auto& kw)
                                             {
-                                                const auto it = std::find(blacklist.begin(), blacklist.end(), kw);
+                                                const auto it = std::ranges::find(blacklist, kw);
                                                 if (it != blacklist.end()) {
                                                     blackListed.push_back(kw);
                                                 }
@@ -1053,7 +1055,7 @@ void ECLRegressionTest::results_smry()
             std::cout << "\nChecking " << keywords1.size() << "  vectors  ... ";
 
             for (size_t i = 0; i < keywords1.size(); i++) {
-                auto it1 = std::find(keywords2.begin(), keywords2.end(), keywords1[i]);
+                const auto it1 = std::ranges::find(keywords2, keywords1[i]);
                 if (it1 == keywords2.end() and acceptExtraKeywordsBoth) {
                     std::cout << "\nSkipping comparison for kw " << keywords1[i];
                     continue;
@@ -1216,7 +1218,7 @@ void ECLRegressionTest::results_rft()
                     std::string keyword = std::get<0>(array);
                     eclArrType arrayType = std::get<1>(array);
 
-                    auto it = std::find(keywordsBlackList.begin(), keywordsBlackList.end(), keyword);
+                    const auto it = std::ranges::find(keywordsBlackList, keyword);
 
                     if (it != keywordsBlackList.end()){
                         std::cout << "Skipping  " << keyword << std::endl;
@@ -1296,25 +1298,27 @@ void ECLRegressionTest::printComparisonForKeywordLists(const std::vector<std::st
     std::cout << std::endl;
 
     for (auto& it : commonList) {
-        auto it1 = std::find(arrayList1.begin(), arrayList1.end(), it);
+        const auto it1 = std::ranges::find(arrayList1, it);
         int ind1 = std::distance(arrayList1.begin(), it1);
 
-        auto it2 = std::find(arrayList2.begin(), arrayList2.end(), it);
+        const auto it2 = std::ranges::find(arrayList2, it);
         int ind2 = std::distance(arrayList2.begin(),it2);
 
         if (arrayType1[ind1] != arrayType2[ind2]) {
             std::cout << "\033[1;31m";
         }
 
-        if (std::find(arrayList1.begin(), arrayList1.end(), it) != arrayList1.end()) {
+        if (std::ranges::find(arrayList1, it) != arrayList1.end()) {
             std::cout <<  std::setw(maxLen) << it << " (" <<  arrTypeStrList[arrayType1[ind1]] << ") | ";
-        } else {
+        }
+        else {
             std::cout <<  std::setw(maxLen) << "" << "        | ";
         }
 
-        if (std::find(arrayList2.begin(), arrayList2.end(), it) != arrayList2.end()) {
+        if (std::ranges::find(arrayList2, it) != arrayList2.end()) {
             std::cout <<  std::setw(maxLen) << it << " (" <<  arrTypeStrList[arrayType2[ind2]] << ") ";
-        } else {
+        }
+        else {
             std::cout <<  std::setw(maxLen) << "";
         }
 
@@ -1345,7 +1349,7 @@ void ECLRegressionTest::printMissingKeywords(const std::vector<std::string>& arr
     std::cout << "\nKeywords found in second case, but missing in first case: \n" << std::endl;
 
     for (auto& it : commonList) {
-        if (std::find(arrayList1.begin(), arrayList1.end(), it) == arrayList1.end()) {
+        if (std::ranges::find(arrayList1, it) == arrayList1.end()) {
             std::cout << "  > '" << it  << "'" << std::endl;
         }
     }
@@ -1353,7 +1357,7 @@ void ECLRegressionTest::printMissingKeywords(const std::vector<std::string>& arr
     std::cout << "\nKeywords found in first case, but missing in second case: \n" << std::endl;
 
     for (auto& it : commonList) {
-        if (std::find(arrayList2.begin(), arrayList2.end(), it) == arrayList2.end()) {
+        if (std::ranges::find(arrayList2, it) == arrayList2.end()) {
             std::cout << "  > '" << it  << "'" << std::endl;
         }
     }
@@ -1385,15 +1389,17 @@ void ECLRegressionTest::printComparisonForKeywordLists(const std::vector<std::st
     std::cout << std::endl;
 
     for (auto& it : commonList) {
-        if (std::find(arrayList1.begin(), arrayList1.end(), it) != arrayList1.end()) {
+        if (std::ranges::find(arrayList1, it) != arrayList1.end()) {
             std::cout <<  std::setw(maxLen) << it  << " | ";
-        } else {
+        }
+        else {
             std::cout <<  std::setw(maxLen) << "" << " | ";
         }
 
-        if (std::find(arrayList2.begin(), arrayList2.end(), it) != arrayList2.end()) {
+        if (std::ranges::find(arrayList2, it) != arrayList2.end()) {
             std::cout <<  std::setw(maxLen) << it << "";
-        } else {
+        }
+        else {
             std::cout <<  std::setw(maxLen) << "" ;
         }
 

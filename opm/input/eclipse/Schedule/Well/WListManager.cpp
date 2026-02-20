@@ -158,7 +158,7 @@ namespace Opm {
             if (this->well_wlist_names.count(wname) > 0) {
                 auto& wlist_vec = this->well_wlist_names.at(wname);
                 auto& no_wl = this->no_wlists_well.at(wname);
-                auto itwl = std::find(wlist_vec.begin(), wlist_vec.end(), wlist.getName());
+                const auto itwl = std::ranges::find(wlist_vec, wlist.getName());
                 if (itwl != wlist_vec.end()) {
                     wlist_vec.erase(itwl);
                     no_wl -= 1;
@@ -184,7 +184,7 @@ namespace Opm {
             auto& wlist_vec = this->well_wlist_names.at(wname);
             auto& no_wl = this->no_wlists_well.at(wname);
             // reduce the no of well lists associated with a well, delete whole list if no wlists is zero
-            const auto& it = std::find(wlist_vec.begin(), wlist_vec.end(), wlname);
+            const auto it = std::ranges::find(wlist_vec, wlname);
             if (it != wlist_vec.end()) {
                 no_wl -= 1;
                 if (no_wl == 0) {

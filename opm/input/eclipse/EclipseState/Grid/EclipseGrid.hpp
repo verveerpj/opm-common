@@ -112,19 +112,20 @@ namespace Opm {
           return m_print_order_lgr_cells;
         }
 
-        size_t get_lgr_cell_index(const std::string& lgr_tag) const {
-          const auto& labels = get_all_lgr_labels();
+        std::size_t get_lgr_cell_index(const std::string& lgr_tag) const
+        {
+            const auto& labels = get_all_lgr_labels();
 
-          if (labels.empty()) {
-              throw std::runtime_error("No LGR labels available.");
-          }
+            if (labels.empty()) {
+                throw std::runtime_error("No LGR labels available.");
+            }
 
-          auto it = std::find(labels.begin(), labels.end(), lgr_tag);
-          if (it == labels.end()) {
-              throw std::runtime_error("LGR tag not found: " + lgr_tag);
-          }
+            const auto it = std::ranges::find(labels, lgr_tag);
+            if (it == labels.end()) {
+                throw std::runtime_error("LGR tag not found: " + lgr_tag);
+            }
 
-          return static_cast<size_t>(std::distance(labels.begin(), it));
+            return static_cast<size_t>(std::distance(labels.begin(), it));
         }
 
         size_t getActiveIndex(size_t globalIndex) const {

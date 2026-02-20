@@ -713,14 +713,13 @@ void keywordAquifer(SummaryConfig::keyword_list& list,
     }
     else {
         auto ids = std::vector<int>{};
-        auto end = pertinentIDs.end();
 
         for (const int id : keyword.getIntData()) {
             // Note: std::find() could be std::lower_bound() here, but we
             // typically expect the number of pertinent aquifer IDs to be
             // small (< 10) so there's no big gain from a log(N) algorithm
             // in the common case.
-            if (std::find(pertinentIDs.begin(), end, id) == end) {
+            if (std::ranges::find(pertinentIDs, id) == pertinentIDs.end()) {
                 handleMissingAquifer(parseContext, errors,
                                      keyword.location(),
                                      id, is_numeric);
@@ -986,8 +985,7 @@ void keyword_node(SummaryConfig::keyword_list& list,
     const auto& item = keyword.getDataRecord().getDataItem();
 
     for (const auto& node_name : item.getData<std::string>()) {
-        auto pos = std::find(node_names.begin(),
-                             node_names.end(), node_name);
+        const auto pos = std::ranges::find(node_names, node_name);
 
         if (pos != node_names.end()) {
             list.push_back(param.namedEntity(node_name));

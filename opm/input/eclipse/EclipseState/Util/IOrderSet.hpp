@@ -121,7 +121,7 @@ public:
 
         this->index_.erase(value);
 
-        auto data_iter = std::find(this->data_.begin(), this->data_.end(), value);
+        const auto data_iter = std::ranges::find(this->data_, value);
         this->data_.erase(data_iter);
 
         return 1;

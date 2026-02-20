@@ -132,18 +132,18 @@ PERMX
     {
         const auto& keys = fpm.keys<double>();
         BOOST_CHECK_EQUAL(keys.size(), decltype(keys.size()){1});
-        BOOST_CHECK(std::find(keys.begin(), keys.end(), "PORO")  != keys.end());
-        BOOST_CHECK(std::find(keys.begin(), keys.end(), "PERMX") == keys.end());
+        BOOST_CHECK(std::ranges::find(keys, "PORO")  != keys.end());
+        BOOST_CHECK(std::ranges::find(keys, "PERMX") == keys.end());
 
         // The PORV property should be extracted with the special function
         // fp.porv() and not the general get<double>() functionality.
-        BOOST_CHECK(std::find(keys.begin(), keys.end(), "PORV") == keys.end());
+        BOOST_CHECK(std::ranges::find(keys, "PORV") == keys.end());
     }
     {
         const auto& keys = fpm.keys<int>();
         BOOST_CHECK_EQUAL(keys.size(), decltype(keys.size()){0});
 
-        BOOST_CHECK(std::find(keys.begin(), keys.end(), "ACTNUM") == keys.end());
+        BOOST_CHECK(std::ranges::find(keys, "ACTNUM") == keys.end());
     }
 }
 

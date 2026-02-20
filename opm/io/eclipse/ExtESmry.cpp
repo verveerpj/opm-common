@@ -176,7 +176,7 @@ ExtESmry::ExtESmry(const std::string &filename, bool loadBaseRunData) :
             m_tstep_v.push_back(std::get<5>(ext_esmry_head));
 
             m_nTstep_v.push_back(m_tstep_v.back().size());
-            auto it = std::find(m_rstep_v[sim_ind].begin(), m_rstep_v[sim_ind].end(), rstNum);
+            const auto it = std::ranges::find(m_rstep_v[sim_ind], rstNum);
 
             size_t ind =  std::distance(m_rstep_v[sim_ind].begin(), it);
 
@@ -514,9 +514,9 @@ void ExtESmry::loadData(const std::vector<std::string>& stringVect)
 
     int keyCounter = 0;
 
-    for (const auto& key: stringVect){
+    for (const auto& key: stringVect) {
         auto key_ind = m_keyword_index[0].at(key);
-        if ((!m_vectorLoaded[key_ind]) && (std::find(keyIndexVect.begin(), keyIndexVect.end(), key_ind) == keyIndexVect.end() )){
+        if ((!m_vectorLoaded[key_ind]) && (std::ranges::find(keyIndexVect, key_ind) == keyIndexVect.end())) {
             keyIndexVect.push_back(key_ind);
             loadKeyIndex.push_back(keyCounter);
         }

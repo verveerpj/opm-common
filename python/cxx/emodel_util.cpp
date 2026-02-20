@@ -23,7 +23,7 @@ Opm::EclIO::eclArrType getArrayType(EModel * file_ptr, std::string key){
 
     std::vector<std::string> inteVect = {"I", "J", "K", "ROW", "COLUMN", "LAYER"};
 
-    if(std::find(inteVect.begin(), inteVect.end(), key) != inteVect.end()) {
+    if (std::ranges::find(inteVect, key) != inteVect.end()) {
         return Opm::EclIO::INTE;
     }
 

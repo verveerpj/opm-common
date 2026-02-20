@@ -161,8 +161,7 @@ public:
         /// \return Whether or not \p elem exists in the value range.
         bool hasElementUnsorted(const T& elem) const
         {
-            return std::find(this->begin(), this->end(), elem)
-                != this->end();
+            return std::ranges::find(*this, elem) != this->end();
         }
     };
 

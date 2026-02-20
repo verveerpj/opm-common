@@ -40,8 +40,7 @@ void WList::clear()
 
 bool WList::has(const std::string& well) const
 {
-    return std::find(this->well_list.begin(), this->well_list.end(), well)
-        != this->well_list.end();
+    return std::ranges::find(this->well_list, well) != this->well_list.end();
 }
 
 void WList::add(const std::string& well)

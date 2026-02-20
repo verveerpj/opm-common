@@ -152,9 +152,7 @@ Opm::WellFractureSeeds::seedIndexBinarySearch(const std::size_t seedCellGlobal) 
 Opm::WellFractureSeeds::NormalVectorIx
 Opm::WellFractureSeeds::seedIndexLinearSearch(const std::size_t seedCellGlobal) const
 {
-    auto cellPos = std::find(this->seedCell_.begin(),
-                             this->seedCell_.end(),
-                             seedCellGlobal);
+    const auto cellPos = std::ranges::find(this->seedCell_, seedCellGlobal);
 
     return (cellPos == this->seedCell_.end())
         ? this->seedCell_.size()
