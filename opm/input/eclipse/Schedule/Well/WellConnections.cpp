@@ -880,11 +880,9 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
 
     bool WellConnections::hasGlobalIndex(std::size_t global_index) const
     {
-        return std::any_of(this->begin(), this->end(),
-                           [global_index](const Connection& conn)
-                           {
-                               return conn.global_index() == global_index;
-                           });
+        return std::ranges::any_of(*this,
+                                   [global_index](const Connection& conn)
+                                   { return conn.global_index() == global_index; });
     }
 
     const Connection&

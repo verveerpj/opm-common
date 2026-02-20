@@ -130,7 +130,7 @@ namespace Opm {
             return e.name() == name;
         };
 
-        return std::any_of( this->begin(), this->end(), eq );
+        return std::ranges::any_of(*this, eq);
     }
 
     DeckRecord::const_iterator DeckRecord::begin() const {

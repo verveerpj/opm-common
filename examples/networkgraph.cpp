@@ -115,8 +115,8 @@ Node::next_branch()
     std::shared_ptr<Node> p1 = m_outlet;
 
     while (p1 != nullptr) {
-        if (std::any_of(p1->m_inlet_list.begin(), p1->m_inlet_list.end(),
-                        [](const auto& inlet) { return inlet->m_xpos == -1 ;}))
+        if (std::ranges::any_of(p1->m_inlet_list,
+                                [](const auto& inlet) { return inlet->m_xpos == -1 ;}))
         {
             return p1;
         }
@@ -483,8 +483,8 @@ NetWork::time_str(time_t t1)
 bool
 NetWork::node_exist(const std::string& name)
 {
-    return std::any_of(m_node_list.begin(), m_node_list.end(),
-                       [&name](const auto& node) { return node->name() == name; });
+    return std::ranges::any_of(m_node_list,
+                               [&name](const auto& node) { return node->name() == name; });
 }
 
 void

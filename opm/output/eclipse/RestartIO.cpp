@@ -533,11 +533,9 @@ namespace {
             ! wells.empty())
         {
             const auto haveMSW =
-                std::any_of(std::begin(wells), std::end(wells),
-                    [&schedule, sim_step](const std::string& well)
-                {
-                    return schedule.getWell(well, sim_step).isMultiSegment();
-                });
+                std::ranges::any_of(wells,
+                                    [&schedule, sim_step](const std::string& well)
+                                    { return schedule.getWell(well, sim_step).isMultiSegment(); });
 
             if (haveMSW) {
                 writeMSWData(sim_step, schedule.getUnits(), schedule, grid,
@@ -582,22 +580,23 @@ namespace {
             writeNetwork(es, sim_step, schedule.getUnits(), schedule, sumState, inteHD, rstFile);
         }
         const auto& wells = schedule.wellNames(sim_step);
-        const bool has_lgrwells = std::any_of(std::begin(wells), std::end(wells),
-            [&schedule, &lgr_tag, sim_step](const std::string& well)
-            {
-                const auto& lwell = schedule.getWell(well, sim_step);
-                return lwell.get_lgr_well_tag().value_or("") == lgr_tag;
-            });
+        const bool has_lgrwells =
+            std::ranges::any_of(wells,
+                                [&schedule, &lgr_tag, sim_step](const std::string& well)
+                                {
+                                    const auto& lwell = schedule.getWell(well, sim_step);
+                                    return lwell.get_lgr_well_tag().value_or("") == lgr_tag;
+                                });
         // Write well and MSW data only when applicable (i.e., when present)
         if (!wells.empty() and has_lgrwells)
         {
             const auto haveMSW =
-            std::any_of(std::begin(wells), std::end(wells),
-            [&schedule, sim_step](const std::string& well)
-            {
-                const auto& lwell = schedule.getWell(well, sim_step);
-                return lwell.isMultiSegment() && (lwell.is_lgr_well() );
-            });
+                std::ranges::any_of(wells,
+                                    [&schedule, sim_step](const std::string& well)
+                                    {
+                                        const auto& lwell = schedule.getWell(well, sim_step);
+                                        return lwell.isMultiSegment() && (lwell.is_lgr_well() );
+                                    });
 
             if (haveMSW) {
                 throw std::logic_error("MSW not supported for LGR");

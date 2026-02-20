@@ -234,16 +234,15 @@ bool ScheduleState::first_in_year() const {
 
 bool ScheduleState::well_group_contains_lgr(const Group& grp, const std::string& lgr_tag) const
 {
-if (! grp.wellgroup()) {
-    return false;
-}
+    if (! grp.wellgroup()) {
+        return false;
+    }
 
-const auto& gwells = grp.wells();
+    const auto& gwells = grp.wells();
 
-return std::any_of(gwells.begin(), gwells.end(), [&lgr_tag, this](const std::string& wname)
-{
-    return this->wells(wname).get_lgr_well_tag().value_or("") == lgr_tag;
-});
+    return std::ranges::any_of(gwells,
+                               [&lgr_tag, this](const std::string& wname)
+                               { return this->wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
 }
 
 bool ScheduleState::group_contains_lgr(const Group& grp, const std::string& lgr_tag) const
@@ -254,11 +253,12 @@ bool ScheduleState::group_contains_lgr(const Group& grp, const std::string& lgr_
 
     const auto& children = grp.groups();
 
-    return std::any_of(children.begin(), children.end(), [&lgr_tag, this](const std::string& child_group_name)
-    {
-        const auto& child_group = this->groups.get(child_group_name);
-        return this->group_contains_lgr(child_group, lgr_tag);
-    });
+    return std::ranges::any_of(children,
+                               [&lgr_tag, this](const std::string& child_group_name)
+                               {
+                                   const auto& child_group = this->groups.get(child_group_name);
+                                   return this->group_contains_lgr(child_group, lgr_tag);
+                               });
 }
 
 std::size_t ScheduleState::num_lgr_well_in_group(const Group& grp, const std::string& lgr_tag) const
@@ -562,9 +562,9 @@ bool ScheduleState::rst_file(const RSTConfig&  rst,
 
 bool ScheduleState::has_gpmaint() const
 {
-    return std::any_of(this->groups.begin(), this->groups.end(), [](const auto& name_group) {
-            return name_group.second->gpmaint().has_value();
-    });
+    return std::ranges::any_of(this->groups,
+                               [](const auto& name_group)
+                               { return name_group.second->gpmaint().has_value(); });
 }
 
 

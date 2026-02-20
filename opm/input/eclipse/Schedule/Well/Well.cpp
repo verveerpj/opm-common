@@ -1465,11 +1465,9 @@ std::map<int, std::vector<Connection>> Well::getCompletions() const
 
 bool Well::hasCompletion(int completion) const
 {
-    return std::any_of(this->connections->begin(), this->connections->end(),
-                       [completion](const auto& conn)
-                       {
-                           return conn.complnum() == completion;
-                       });
+    return std::ranges::any_of(*this->connections,
+                              [completion](const auto& conn)
+                              { return conn.complnum() == completion; });
 }
 
 Phase Well::getPreferredPhase() const

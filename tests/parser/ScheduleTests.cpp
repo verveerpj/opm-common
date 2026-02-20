@@ -390,11 +390,9 @@ WELSPECS
     bool has_name(const std::vector<std::string>& names,
                   const std::string& name)
     {
-        return std::any_of(names.begin(), names.end(),
-                           [&name](const std::string& search)
-                           {
-                               return search == name;
-                           });
+        return std::ranges::any_of(names,
+                                   [&name](const std::string& search)
+                                   { return search == name; });
     }
 
 } // Anonymous namespace
@@ -4050,11 +4048,9 @@ namespace {
 
     bool has(const std::vector<std::string>& l, const std::string& s)
     {
-        return std::any_of(l.begin(), l.end(),
-                           [&s](const std::string& search)
-                           {
-                               return search == s;
-                           });
+        return std::ranges::any_of(l,
+                                   [&s](const std::string& search)
+                                   { return search == s; });
     }
 }
 
