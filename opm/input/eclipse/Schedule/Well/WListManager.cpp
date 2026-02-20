@@ -274,9 +274,8 @@ namespace Opm {
             auto newWellsCpy = newWells;
             std::ranges::sort(newWellsCpy);
 
-            std::set_difference(wlistWells.begin(), wlistWells.end(),
-                                newWellsCpy.begin(), newWellsCpy.end(),
-                                std::back_inserter(deleteWells));
+            std::ranges::set_difference(wlistWells, newWellsCpy,
+                                        std::back_inserter(deleteWells));
         }
 
         for (const auto& deleteWell : deleteWells) {
