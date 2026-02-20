@@ -123,7 +123,7 @@ namespace Opm {
         if (this->well_wlist_names.count(wname) > 0) {
             auto& no_wl = this->no_wlists_well.at(wname);
             auto& wlist_vec = this->well_wlist_names.at(wname);
-            if (std::count(wlist_vec.begin(), wlist_vec.end(), wlname) == 0) {
+            if (std::ranges::count(wlist_vec, wlname) == 0) {
                 wlist_vec.push_back(wlname);
                 no_wl += 1;
             }

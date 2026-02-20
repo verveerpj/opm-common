@@ -75,7 +75,7 @@ std::deque< std::string_view > splitSingleRecordString( const std::string_view& 
 
 template< typename T >
 inline bool even_quotes( const T& str ) {
-    return std::count( str.begin(), str.end(), RawConsts::quote ) % 2 == 0;
+    return std::ranges::count(str, RawConsts::quote ) % 2 == 0;
 }
 
 }

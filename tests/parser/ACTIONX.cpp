@@ -748,8 +748,8 @@ BOOST_AUTO_TEST_CASE(TestMatchingWells2)
 
     BOOST_CHECK(res2.conditionSatisfied());
     BOOST_CHECK_EQUAL(wells2.size(), 2U);
-    BOOST_CHECK_EQUAL(std::count(wells2.begin(), wells2.end(), "PZ"), 1);
-    BOOST_CHECK_EQUAL(std::count(wells2.begin(), wells2.end(), "IZ"), 1);
+    BOOST_CHECK_EQUAL(std::ranges::count(wells2, "PZ"), 1);
+    BOOST_CHECK_EQUAL(std::ranges::count(wells2, "IZ"), 1);
 }
 
 BOOST_AUTO_TEST_CASE(TestMatchingWells_AND)
