@@ -66,9 +66,9 @@ WelSegsSet::intersection(const std::set<std::string>& wells1,
                          const std::set<std::string>& wells2) const
 {
     std::set<std::string> wells_intersection;
-    std::set_intersection(wells1.begin(), wells1.end(),
-                          wells2.begin(), wells2.end(),
-                          std::inserter(wells_intersection, wells_intersection.begin()));
+    std::ranges::set_intersection(wells1, wells2,
+                                  std::inserter(wells_intersection,
+                                                wells_intersection.begin()));
 
     if (wells_intersection.empty()) {
         return {};
