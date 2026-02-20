@@ -305,7 +305,7 @@ namespace ML
 
         void fill(const T& value)
         {
-            std::fill(data_.begin(), data_.end(), value);
+            std::ranges::fill(data_, value);
         }
 
         // Tensor addition

@@ -56,8 +56,8 @@ void handleDRSDT(HandlerContext& handlerContext)
             .getItem<ParserKeywords::DRSDT::OPTION>()
             .get<std::string>(0);
 
-        std::fill(maximums.begin(), maximums.end(), max);
-        std::fill(options.begin(), options.end(), option);
+        std::ranges::fill(maximums, max);
+        std::ranges::fill(options, option);
 
         auto ovp = handlerContext.state().oilvap();
         OilVaporizationProperties::updateDRSDT(ovp, maximums, options);
@@ -149,7 +149,7 @@ void handleDRVDT(HandlerContext& handlerContext)
             .getItem<ParserKeywords::DRVDTR::DRVDT_MAX>()
             .getSIDouble(0);
 
-        std::fill(maximums.begin(), maximums.end(), max);
+        std::ranges::fill(maximums, max);
 
         auto ovp = handlerContext.state().oilvap();
         OilVaporizationProperties::updateDRVDT(ovp, maximums);

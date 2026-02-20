@@ -254,7 +254,7 @@ bool EModel::hasReportStep(int rstep)
 
 void EModel::resetFilter()
 {
-    activeFilter=false;
+    activeFilter = false;
     std::fill(ActFilter.begin(), ActFilter.end(), true);
 }
 

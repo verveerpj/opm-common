@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(SizeConstructed, Scalar, Types)
     }
 
     for (const auto i : uindices) {
-        std::fill(array[i].begin(), array[i].end(), static_cast<Scalar>(i));
+        std::ranges::fill(array[i], static_cast<Scalar>(i));
     }
 
     for (const auto i: indices) {

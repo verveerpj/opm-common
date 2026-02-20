@@ -219,7 +219,7 @@ initSatnumRegionArray_(const IntLookupFunction& fieldPropIntOnLeafAssigner)
                                                                "SATNUM", /*needsTranslation*/true);
     }
     else {
-        std::fill(params_.satnumRegionArray.begin(), params_.satnumRegionArray.end(), 0);
+        std::ranges::fill(params_.satnumRegionArray, 0);
     }
 }
 
