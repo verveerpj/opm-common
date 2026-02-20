@@ -644,12 +644,8 @@ namespace Opm {
         return this->m_comp_pressure_drop == rhs.m_comp_pressure_drop
             && this->m_segments.size() == rhs.m_segments.size()
             && this->segment_number_to_index.size() == rhs.segment_number_to_index.size()
-            && std::equal( this->m_segments.begin(),
-                           this->m_segments.end(),
-                           rhs.m_segments.begin() )
-            && std::equal( this->segment_number_to_index.begin(),
-                           this->segment_number_to_index.end(),
-                           rhs.segment_number_to_index.begin() );
+            && std::ranges::equal(this->m_segments, rhs.m_segments)
+            && std::ranges::equal(this->segment_number_to_index, rhs.segment_number_to_index);
     }
 
     double WellSegments::segmentLength(const int segment_number) const {

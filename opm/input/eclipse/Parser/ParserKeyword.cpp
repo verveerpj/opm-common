@@ -1131,7 +1131,7 @@ void set_dimensions( ParserItem& item,
             return false;
 
         return this->m_records.size() == rhs.m_records.size()
-            && std::equal( this->begin(), this->end(), rhs.begin() );
+            && std::ranges::equal(*this, rhs);
     }
 
     bool ParserKeyword::operator!=( const ParserKeyword& rhs ) const {

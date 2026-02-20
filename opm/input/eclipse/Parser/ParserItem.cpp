@@ -345,9 +345,7 @@ void ParserItem::push_backDimension( const std::string& dim ) {
     }
     if( this->data_type != type_tag::fdouble ) return true;
     return this->m_dimensions.size() == rhs.m_dimensions.size()
-        && std::equal( this->m_dimensions.begin(),
-                       this->m_dimensions.end(),
-                       rhs.m_dimensions.begin() );
+        && std::ranges::equal(this->m_dimensions, rhs.m_dimensions);
 }
 
 bool ParserItem::operator!=( const ParserItem& rhs ) const {

@@ -29,12 +29,12 @@
 
 using namespace Opm;
 
-bool are_equal(const std::vector<double>& a, const std::vector<double>& b, double epsilon = 1e-8) {
+bool are_equal(const std::vector<double>& a, const std::vector<double>& b, double epsilon = 1e-8)
+{
     return a.size() == b.size() &&
-           std::equal(a.begin(), a.end(), b.begin(),
-                     [epsilon](double x, double y) {
-                         return std::abs(x - y) < epsilon;
-                     });
+           std::ranges::equal(a, b,
+                              [epsilon](double x, double y)
+                              { return std::abs(x - y) < epsilon; });
 }
 
 BOOST_AUTO_TEST_CASE(TestGrid2CPG1) {
