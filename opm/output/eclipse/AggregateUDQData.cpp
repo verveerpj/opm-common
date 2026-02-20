@@ -155,12 +155,12 @@ namespace {
     // bracket that is ending the expression
     int numOperators(const std::vector<Opm::UDQToken>& modTokens)
     {
-        return std::count_if(modTokens.begin(), modTokens.end(),
-                             [](const auto& token)
-                             {
-                                 return isOperatorToken(token.type())
-                                     || isTokenTypeParen(token.type());
-                             });
+        return std::ranges::count_if(modTokens,
+                                     [](const auto& token)
+                                     {
+                                          return isOperatorToken(token.type())
+                                              || isTokenTypeParen(token.type());
+                                     });
     }
 
     // function to return the precedence of the current operator/function

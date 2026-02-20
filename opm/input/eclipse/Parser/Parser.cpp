@@ -367,11 +367,12 @@ inline bool starts_with(const std::string_view& view, const std::string& str) {
     }
 }
 
-inline std::string clean( const std::vector<std::pair<std::string, std::string>>& code_keywords, const std::string& str ) {
-    auto count = std::count_if(code_keywords.begin(), code_keywords.end(), [&str](const std::pair<std::string, std::string>& code_pair)
-                                                                  {
-                                                                     return str.find(code_pair.first) != std::string::npos;
-                                                                   });
+inline std::string clean(const std::vector<std::pair<std::string, std::string>>& code_keywords,
+                         const std::string& str )
+{
+    auto count = std::ranges::count_if(code_keywords,
+                                       [&str](const std::pair<std::string, std::string>& code_pair)
+                                       { return str.find(code_pair.first) != std::string::npos; });
 
     if (count == 0)
         return fast_clean(str);

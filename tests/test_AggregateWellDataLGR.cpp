@@ -1457,9 +1457,9 @@ BOOST_AUTO_TEST_CASE (Declared_Well_Data2LGRWells)
 
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
     auto ih = MockIH {
@@ -1819,9 +1819,9 @@ BOOST_AUTO_TEST_CASE (Declared_Well_Data3Wells1G2LGR)
 
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
     auto ih = MockIH {
@@ -2162,9 +2162,9 @@ BOOST_AUTO_TEST_CASE (LGR_WellingitSameHostGrid)
 
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
     auto ih = MockIH {
@@ -2300,9 +2300,9 @@ BOOST_AUTO_TEST_CASE (LGR_BugFixCrossingLGRWell)
 
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
     auto ih = MockIH {
@@ -2438,9 +2438,9 @@ BOOST_AUTO_TEST_CASE (LGR_CARFINGR)
 
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
     auto ih = MockIH {
@@ -2558,9 +2558,9 @@ BOOST_AUTO_TEST_CASE (Declared_Well_Data3MixedGroupsWells)
 
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
     auto ih = MockIH {
@@ -2969,9 +2969,9 @@ BOOST_AUTO_TEST_CASE (Declared_WellDynamicDataLGR)
     const auto rptStep = std::size_t{1};
     auto countWells = [&simCase](const std::string& lgr_tag) -> int {
         const auto wnames = simCase.sched.wellNames(rptStep);
-        return std::count_if(wnames.begin(), wnames.end(),
-                             [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
-                             { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        return std::ranges::count_if(wnames,
+                                     [&lgr_tag, &sched = simCase.sched[rptStep]](const auto& wname)
+                                     { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
     };
 
 

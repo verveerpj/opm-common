@@ -485,11 +485,9 @@ std::vector<double> UDQSet::defined_values() const
 
 std::size_t UDQSet::defined_size() const
 {
-    return std::count_if(this->values.begin(), this->values.end(),
-                         [](const UDQScalar& value)
-                         {
-                             return value.defined();
-                         });
+    return std::ranges::count_if(this->values,
+                                 [](const UDQScalar& value)
+                                 { return value.defined(); });
 }
 
 const UDQScalar& UDQSet::operator[](std::size_t index) const

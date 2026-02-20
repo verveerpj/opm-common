@@ -207,11 +207,9 @@ namespace {
 
         const auto& wnames = sched.wellNames(lookup_step);
 
-        return std::count_if(std::begin(wnames), std::end(wnames),
-            [&sched, lookup_step](const std::string& wname) -> bool
-        {
-            return sched.getWell(wname, lookup_step).isMultiSegment();
-        });
+        return std::ranges::count_if(wnames,
+                                    [&sched, lookup_step](const std::string& wname) -> bool
+                                    { return sched.getWell(wname, lookup_step).isMultiSegment(); });
     }
 
     int maxNumSegments(const ::Opm::Schedule& sched,
@@ -300,9 +298,10 @@ namespace {
 
         const auto schedule_state = sched[lookup_step];
         const auto wnames = sched.wellNames(lookup_step);
-        int numWells = std::count_if(wnames.begin(), wnames.end(),
-        [&lgr_tag, &sched = sched[lookup_step]](const auto& wname)
-        { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
+        int numWells =
+            std::ranges::count_if(wnames,
+                                  [&lgr_tag, &sched = sched[lookup_step]](const auto& wname)
+                                  { return sched.wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
 
         const auto maxPerf =
             std::max(wd.maxConnPerWell(),
