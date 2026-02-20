@@ -214,8 +214,7 @@ namespace {
 
         bool operator()(const std::string& mnemonic) const
         {
-            return std::binary_search(this->mnemonics_.begin(),
-                                      this->mnemonics_.end(), mnemonic);
+            return std::ranges::binary_search(this->mnemonics_, mnemonic);
         }
 
     private:

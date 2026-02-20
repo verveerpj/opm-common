@@ -186,8 +186,7 @@ namespace {
         isActive.reserve(v.size());
 
         for (const auto& elm : v) {
-            isActive.push_back(std::binary_search(activeElements.begin(),
-                                                  activeElements.end(), elm));
+            isActive.push_back(std::ranges::binary_search(activeElements, elm));
         }
 
         return isActive;
