@@ -57,6 +57,30 @@ namespace {
     return parser.parseString(deck_string);
   };
 
+  std::tuple<std::vector<double>, std::vector<double>> final_deformed_data_geometric()
+  {
+    std::vector<double> depth = {
+      0.95833331E-01,   0.17083333E+00,   0.24583334E+00,   0.20416667E+00,
+      0.26249999E+00,   0.32083333E+00,   0.31250000E+00,   0.35416666E+00,
+      0.39583334E+00,   0.18750000E+00,   0.34583333E+00,   0.50416666E+00,
+      0.37916666E+00,   0.48750001E+00,   0.59583336E+00,   0.57083333E+00,
+      0.62916666E+00,   0.68750000E+00,   0.27916667E+00,   0.52083331E+00,
+      0.76249999E+00,   0.55416667E+00,   0.71249998E+00,   0.87083334E+00,
+      0.82916665E+00,   0.90416664E+00,   0.97916669E+00
+    };
+
+    std::vector<double> porv = {
+      0.30555555E-02,   0.58333334E-02,   0.86111110E-02,   0.58333334E-02,
+      0.74999998E-02,   0.91666663E-02,   0.86111110E-02,   0.91666663E-02,
+      0.97222226E-02,   0.30555555E-02,   0.58333334E-02,   0.86111110E-02,
+      0.58333334E-02,   0.74999998E-02,   0.91666663E-02,   0.86111110E-02,
+      0.91666663E-02,   0.97222226E-02,   0.30555555E-02,   0.58333334E-02,
+      0.86111110E-02,   0.58333334E-02,   0.74999998E-02,   0.91666663E-02,
+      0.86111110E-02,   0.91666663E-02,   0.97222226E-02
+    };
+      return std::make_tuple(depth, porv);
+    }
+
 
 std::tuple<std::vector<double>, std::vector<double>> final_test_data()
 {
@@ -1212,4 +1236,185 @@ END
     const auto l5_cell = eclipse_grid_file.getCellDims(0,0,4);
     const auto lgr1_l5_cell = lgr1.getCellDims(0,0,17);
     BOOST_CHECK_CLOSE(l5_cell[2], 4*lgr1_l5_cell[2], 1e-6);
+  }
+
+
+
+
+    BOOST_AUTO_TEST_CASE(TestFinalDepthDeformed) {
+    const std::string deck_string = R"(
+    RUNSPEC
+    TITLE
+      SPE1 - CASE 1
+    DIMENS
+      1 1 1 /
+    EQLDIMS
+    /
+    TABDIMS
+    /
+    OIL
+    GAS
+    WATER
+    DISGAS
+    START
+      1 'JAN' 2015 /
+    WELLDIMS
+      1 1 1 1 /
+    UNIFOUT
+    GRID
+    CARFIN
+    'LGR1'  1  1  1  1  1  1  3  3  3 /
+    ENDFIN
+    INIT
+    COORD
+      0 0 0  0 0 1000
+      1 0 0  1 0 1000
+      0 1 0  0 1 1000
+      1 1 0  1 1 1000
+    /
+    ZCORN
+      0 0.1 0.2 0.3
+      0 1.0 1.1 1.2
+    /
+    PORO
+        1*0.3 /
+    PERMX
+      1*500/
+    PERMY
+      1*500/
+    PERMZ
+      1*500 /
+    ECHO
+    PROPS
+    PVTW
+          4017.55 1.038 3.22E-6 0.318 0.0 /
+    ROCK
+      14.7 3E-6 /
+    SWOF
+    0.12	0    		 	1	0
+    0.18	4.64876033057851E-008	1	0
+    0.24	0.000000186		0.997	0
+    0.3	4.18388429752066E-007	0.98	0
+    0.36	7.43801652892562E-007	0.7	0
+    0.42	1.16219008264463E-006	0.35	0
+    0.48	1.67355371900826E-006	0.2	0
+    0.54	2.27789256198347E-006	0.09	0
+    0.6	2.97520661157025E-006	0.021	0
+    0.66	3.7654958677686E-006	0.01	0
+    0.72	4.64876033057851E-006	0.001	0
+    0.78	0.000005625		0.0001	0
+    0.84	6.69421487603306E-006	0	0
+    0.91	8.05914256198347E-006	0	0
+    1	0.00001			0	0 /
+    SGOF
+    0	0	1	0
+    0.001	0	1	0
+    0.02	0	0.997	0
+    0.05	0.005	0.980	0
+    0.12	0.025	0.700	0
+    0.2	0.075	0.350	0
+    0.25	0.125	0.200	0
+    0.3	0.190	0.090	0
+    0.4	0.410	0.021	0
+    0.45	0.60	0.010	0
+    0.5	0.72	0.001	0
+    0.6	0.87	0.0001	0
+    0.7	0.94	0.000	0
+    0.85	0.98	0.000	0
+    0.88	0.984	0.000	0 /
+    DENSITY
+            53.66 64.49 0.0533 /
+    PVDG
+    14.700	166.666	0.008000
+    264.70	12.0930	0.009600
+    514.70	6.27400	0.011200
+    1014.7	3.19700	0.014000
+    2014.7	1.61400	0.018900
+    2514.7	1.29400	0.020800
+    3014.7	1.08000	0.022800
+    4014.7	0.81100	0.026800
+    5014.7	0.64900	0.030900
+    9014.7	0.38600	0.047000 /
+    PVTO
+    0.0010	14.7	1.0620	1.0400 /
+    0.0905	264.7	1.1500	0.9750 /
+    0.1800	514.7	1.2070	0.9100 /
+    0.3710	1014.7	1.2950	0.8300 /
+    0.6360	2014.7	1.4350	0.6950 /
+    0.7750	2514.7	1.5000	0.6410 /
+    0.9300	3014.7	1.5650	0.5940 /
+    1.2700	4014.7	1.6950	0.5100
+      9014.7	1.5790	0.7400 /
+    1.6180	5014.7	1.8270	0.4490
+      9014.7	1.7370	0.6310 /
+    /
+    SOLUTION
+    EQUIL
+      8400 4800 8450 0 8300 0 1 0 0 /
+    RSVD
+    8300 1.270
+    8450 1.270 /
+    SUMMARY
+    FOPR
+    WGOR
+      'PROD'
+    /
+    FGOR
+    BPR
+    1  1  1 /
+    2  2  3  /
+    /
+    BGSAT
+    1  1  1 /
+    1  1  2 /
+    1  1  3 /
+    2  1  1 /
+    2  1  2 /
+    2  1  3 /
+    2  2  1 /
+    2  2  2 /
+    2  2  3 /
+    /
+    TSTEP
+    31 28 31 30 31 30 31 31 30 31 30 31
+    /
+    END
+    )";
+
+    Opm::UnitSystem units(1);
+    std::vector<Opm::NNCdata> vecNNC;
+    std::array<int,3> global_grid_dim = {1,1,1};
+    std::vector<double> coord_g, zcorn_g, coord_l1, zcorn_l1, coord_l2, zcorn_l2;
+    // Intialize LgrCollection from string.
+    LgrCollection lgr_col = read_lgr(deck_string,global_grid_dim[0],global_grid_dim[1],global_grid_dim[2]);
+
+    //  Eclipse Grid is intialzied with COORD and ZCORN.
+     Opm::EclipseGrid eclipse_grid_file(init_deck(deck_string));
+    //  LgrCollection is used to initalize LGR Cells in the Eclipse Grid.
+    eclipse_grid_file.init_lgr_cells(lgr_col);
+    eclipse_grid_file.save("SPECASE1_CARFIN_TEST_SMALL-LIT.EGRID",false,vecNNC,units);
+
+    const auto host_coord = eclipse_grid_file.getCOORD();
+    const auto host_zcorn = eclipse_grid_file.getZCORN();
+
+    // LGR1 grids
+    const auto& lgr1 = eclipse_grid_file.getLGRCell("LGR1");
+    const auto lgr1_coord = lgr1.getCOORD();
+    const auto lgr1_zcorn = lgr1.getZCORN();
+
+
+    std::vector<double> lgr_depth;
+    std::vector<double> lgr_porv;
+
+    lgr_depth.reserve(27);
+    lgr_porv.reserve(27);
+    for (size_t i = 0; i < 27; i++) {
+        lgr_depth.push_back(lgr1.getCellDepth(i));
+        lgr_porv.push_back(0.3*lgr1.getCellVolume(i));
+    }
+
+    auto [expected_depth, expected_porv] = final_deformed_data_geometric();
+    check_vec_close(lgr_depth, expected_depth);
+    check_vec_close(lgr_porv, expected_porv);
+
   }
