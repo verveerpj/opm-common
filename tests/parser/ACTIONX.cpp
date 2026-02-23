@@ -799,8 +799,8 @@ BOOST_AUTO_TEST_CASE(TestMatchingWells_OR)
     // second condition, since the two conditions are combined with || the
     // resulting mathcing_wells variable should contain both these wells.
     BOOST_CHECK_EQUAL(wells.size(), 2U);
-    BOOST_CHECK(std::find(wells.begin(), wells.end(), "OPZ") != wells.end());
-    BOOST_CHECK(std::find(wells.begin(), wells.end(), "OPY") != wells.end());
+    BOOST_CHECK(std::ranges::find(wells, "OPZ") != wells.end());
+    BOOST_CHECK(std::ranges::find(wells, "OPY") != wells.end());
 }
 
 BOOST_AUTO_TEST_CASE(TestWLIST)
@@ -823,7 +823,7 @@ BOOST_AUTO_TEST_CASE(TestWLIST)
     BOOST_CHECK(res.conditionSatisfied());
     BOOST_CHECK_EQUAL(wells.size(), 3U);
     for (const auto& w : {"W1", "W3", "W5"}) {
-        auto find_iter = std::find(wells.begin(), wells.end(), w);
+        const auto find_iter = std::ranges::find(wells, w);
         BOOST_CHECK(find_iter != wells.end());
     }
 }
@@ -1260,8 +1260,7 @@ namespace {
 bool has_well(const std::vector<std::string>& wells,
               const std::string&              well)
 {
-    return std::find(wells.begin(), wells.end(), well)
-        != wells.end();
+    return std::ranges::find(wells, well) != wells.end();
 }
 
 } // Anonymous namespace

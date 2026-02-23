@@ -95,7 +95,7 @@ namespace {
             "SKIP100"sv,
             "SKIP300"sv
         };
-        return std::find(kw_list.begin(), kw_list.end(), name) != kw_list.end();
+        return std::ranges::find(kw_list, name) != kw_list.end();
     }
 
     bool isRestartKeyword(const std::string& kw)
@@ -1243,8 +1243,8 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_runspec){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "RUNSPEC");
-        auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "GRID");
+        auto iter_from = std::ranges::find(keyw_names, "RUNSPEC");
+        auto iter_to = std::ranges::find(keyw_names, "GRID");
 
         auto n1 = std::distance(keyw_names.begin(), iter_from);
         auto n2 = std::distance(keyw_names.begin(), iter_to);
@@ -1255,11 +1255,11 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_grid){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "GRID");
-        auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "EDIT");
+        auto iter_from = std::ranges::find(keyw_names, "GRID");
+        auto iter_to = std::ranges::find(keyw_names, "EDIT");
 
         if (iter_to == keyw_names.end())
-            iter_to = std::find(keyw_names.begin(), keyw_names.end(), "PROPS");
+            iter_to = std::ranges::find(keyw_names, "PROPS");
 
         auto n1 = std::distance(keyw_names.begin(), iter_from);
         auto n2 = std::distance(keyw_names.begin(), iter_to);
@@ -1273,7 +1273,7 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
         auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "EDIT");
 
         if (iter_from != keyw_names.end()){
-            auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "PROPS");
+            auto iter_to = std::ranges::find(keyw_names, "PROPS");
             auto n1 = std::distance(keyw_names.begin(), iter_from);
             auto n2 = std::distance(keyw_names.begin(), iter_to);
 
@@ -1285,11 +1285,11 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_props){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "PROPS");
-        auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "REGIONS");
+        auto iter_from = std::ranges::find(keyw_names, "PROPS");
+        auto iter_to = std::ranges::find(keyw_names, "REGIONS");
 
         if (iter_to == keyw_names.end())
-            iter_to = std::find(keyw_names.begin(), keyw_names.end(), "SOLUTION");
+            iter_to = std::ranges::find(keyw_names, "SOLUTION");
 
         auto n1 = std::distance(keyw_names.begin(), iter_from);
         auto n2 = std::distance(keyw_names.begin(), iter_to);
@@ -1300,10 +1300,10 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_regions){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "REGIONS");
+        auto iter_from = std::ranges::find(keyw_names, "REGIONS");
 
         if (iter_from != keyw_names.end()){
-            auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "SOLUTION");
+            auto iter_to = std::ranges::find(keyw_names, "SOLUTION");
 
             auto n1 = std::distance(keyw_names.begin(), iter_from);
             auto n2 = std::distance(keyw_names.begin(), iter_to);
@@ -1315,11 +1315,11 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_solution){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "SOLUTION");
-        auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "SUMMARY");
+        auto iter_from = std::ranges::find(keyw_names, "SOLUTION");
+        auto iter_to = std::ranges::find(keyw_names, "SUMMARY");
 
         if (iter_to == keyw_names.end())
-            iter_to = std::find(keyw_names.begin(), keyw_names.end(), "SCHEDULE");
+            iter_to = std::ranges::find(keyw_names, "SCHEDULE");
 
         auto n1 = std::distance(keyw_names.begin(), iter_from);
         auto n2 = std::distance(keyw_names.begin(), iter_to);
@@ -1330,10 +1330,10 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_summary){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "SUMMARY");
+        auto iter_from = std::ranges::find(keyw_names, "SUMMARY");
 
         if (iter_from != keyw_names.end()){
-            auto iter_to = std::find(keyw_names.begin(), keyw_names.end(), "SCHEDULE");
+            auto iter_to = std::ranges::find(keyw_names, "SCHEDULE");
             auto n1 = std::distance(keyw_names.begin(), iter_from);
             auto n2 = std::distance(keyw_names.begin(), iter_to);
 
@@ -1344,7 +1344,7 @@ void cleanup_deck_keyword_list(ParserState& parserState, const std::set<Opm::Ecl
 
     if (ignore_schedule){
 
-        auto iter_from = std::find(keyw_names.begin(), keyw_names.end(), "SCHEDULE");
+        auto iter_from = std::ranges::find(keyw_names, "SCHEDULE");
 
         auto n1 = std::distance(keyw_names.begin(), iter_from);
         auto n2 = std::distance(keyw_names.begin(), keyw_names.end());
@@ -1928,7 +1928,7 @@ std::vector<std::string> Parser::getAllDeckNames () const {
             "SCHEDULE"sv
         };
 
-        return std::find(delimiters.begin(), delimiters.end(), name) != delimiters.end();
+        return std::ranges::find(delimiters, name) != delimiters.end();
     }
 
     bool DeckSection::checkSectionTopology(const Deck& deck,

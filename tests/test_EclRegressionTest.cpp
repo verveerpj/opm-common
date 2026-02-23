@@ -245,7 +245,7 @@ void makeSmryFile(const std::string &fileName,
     int nSteps = params.size();
 
     for (int i = 0; i < nSteps; i++) {
-        auto search = std::find(seqhdr.begin(), seqhdr.end(), i);
+        const auto search = std::ranges::find(seqhdr, i);
 
         if (search != seqhdr.end()) {
             eclUnsmryTest.write<int>("SEQHDR", {1});

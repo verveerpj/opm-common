@@ -702,7 +702,7 @@ void storeNetworkNodeInformation(const Opm::Schedule& sched,
     // from the BRANPROP keyword.  For all other groups, the node number is
     // zero.
     const auto& nodeNames = network.node_names();
-    const auto seqIndPos = std::find(nodeNames.begin(), nodeNames.end(), group);
+    const auto seqIndPos = std::ranges::find(nodeNames, group);
     if (seqIndPos == nodeNames.end()) {
         nodeNumber = 0;
         addGLiftGas = IGroup::Value::GLiftGas::No;

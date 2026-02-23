@@ -302,9 +302,7 @@ namespace Opm {
 
     void Segment::addInletSegment(const int segment_number_in)
     {
-        auto segPos = std::find(this->m_inlet_segments.begin(),
-                                this->m_inlet_segments.end(),
-                                segment_number_in);
+        auto segPos = std::ranges::find(this->m_inlet_segments, segment_number_in);
 
         if (segPos == this->m_inlet_segments.end()) {
             this->m_inlet_segments.push_back(segment_number_in);

@@ -103,7 +103,7 @@ namespace {
             Opm::UDQTokenType::binary_op_mul,
         };
 
-        return std::find(type_1.begin(), type_1.end(), token) != type_1.end();
+        return std::ranges::find(type_1, token) != type_1.end();
     }
 
     // function to return true if token is a binary operator: type add or
@@ -115,7 +115,7 @@ namespace {
             Opm::UDQTokenType::binary_op_sub,
         };
 
-        return std::find(type_1.begin(), type_1.end(), token) != type_1.end();
+        return std::ranges::find(type_1, token) != type_1.end();
     }
 
     // function to return true if token is a binary union operator
@@ -128,7 +128,7 @@ namespace {
             Opm::UDQTokenType::binary_op_umax,
         };
 
-        return std::find(type_1.begin(), type_1.end(), token) != type_1.end();
+        return std::ranges::find(type_1, token) != type_1.end();
     }
 
     // function to return true if token is an open or close parenthesis token
@@ -139,7 +139,7 @@ namespace {
             Opm::UDQTokenType::close_paren,
         };
 
-        return std::find(type_1.begin(), type_1.end(), token) != type_1.end();
+        return std::ranges::find(type_1, token) != type_1.end();
     }
 
     // A function to return true if the token is an operator
@@ -418,8 +418,7 @@ namespace {
         std::pair<bool, int> result;
 
         // Find given element in vector
-        auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
-
+        const auto it = std::ranges::find(vecOfElements, element);
         if (it != vecOfElements.end()) {
             result.second = std::distance(vecOfElements.begin(), it);
             result.first = true;

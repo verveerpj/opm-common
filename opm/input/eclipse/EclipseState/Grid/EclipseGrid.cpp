@@ -2159,14 +2159,14 @@ std::vector<double> EclipseGrid::createDVector(const std::array<int,3>& dims, st
     }
 
     void EclipseGrid::assertLabelLGR(const std::string& label) const{
-        if (std::find(all_lgr_labels.begin(), all_lgr_labels.end(), label) == all_lgr_labels.end()){
+        if (std::ranges::find(all_lgr_labels, label) == all_lgr_labels.end()){
             throw std::invalid_argument("LGR label not found");
         }
     }
 
 
     void EclipseGrid::assertIndexLGR(std::size_t localIndex) const {
-     if (std::find(lgr_active_index.begin(), lgr_active_index.end(), localIndex) != lgr_active_index.end()) {
+     if (std::ranges::find(lgr_active_index, localIndex) != lgr_active_index.end()) {
         throw std::invalid_argument("input provided is an LGR refined cell");
       }
     }

@@ -218,11 +218,9 @@ bool ERst::hasLGR(const std::string& gridname, int reportStepNumber) const
                   fmt::format("Checking for LGR name in non existing sequence {}", reportStepNumber));
     }
 
-   auto it_seqnum = std::find(seqnum.begin(), seqnum.end(), reportStepNumber);
+   const auto it_seqnum = std::ranges::find(seqnum, reportStepNumber);
    int report_index = std::distance(seqnum.begin(), it_seqnum);
-   auto it_lgrname = std::find(lgr_names[report_index].begin(), lgr_names[report_index].end(), gridname);
-
-   return  (it_lgrname != lgr_names[report_index].end());
+   return std::ranges::find(lgr_names[report_index], gridname) != lgr_names[report_index].end();
 }
 
 
@@ -292,13 +290,10 @@ bool  ERst::hasArray(const std::string& name, int number) const
 
     std::pair<int,int> indexRange = range_it->second;
 
-    auto it = std::find(array_name.begin() + indexRange.first,
-                        array_name.begin() + indexRange.second, name);
+    const auto it = std::find(array_name.begin() + indexRange.first,
+                              array_name  .begin() + indexRange.second, name);
 
-    if (std::distance(array_name.begin(), it) == indexRange.second)
-        return false;
-
-    return true;
+    return std::distance(array_name.begin(), it) != indexRange.second;
 }
 
 bool ERst::hasArray(const std::string& name, int number, const std::string& gridname)
@@ -311,15 +306,10 @@ bool ERst::hasArray(const std::string& name, int number, const std::string& grid
 
     int start_ind_lgr = get_start_index_lgrname(number, gridname);
 
-    auto it = std::find(array_name.begin() + start_ind_lgr,
-                        array_name.begin() + indexRange.second, name);
+    const auto it = std::find(array_name.begin() + start_ind_lgr,
+                              array_name.begin() + indexRange.second, name);
 
-    if (it != array_name.begin() + indexRange.second) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return it != array_name.begin() + indexRange.second;
 }
 
 
@@ -357,8 +347,8 @@ int ERst::getArrayIndex(const std::string& name, int number, const std::string& 
 
     int start_ind_lgr = get_start_index_lgrname(number, lgr_name);
 
-    auto it = std::find(array_name.begin() + start_ind_lgr,
-                        array_name.begin() + indexRange.second, name);
+    const auto it = std::find(array_name.begin() + start_ind_lgr,
+                              array_name.begin() + indexRange.second, name);
 
     if (std::distance(array_name.begin(),it) == indexRange.second) {
         OPM_THROW(std::runtime_error, "Array " + name + " not found for " + lgr_name);

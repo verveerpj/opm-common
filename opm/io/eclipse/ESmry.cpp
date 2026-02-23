@@ -166,9 +166,11 @@ ESmry::ESmry(const std::string &filename, bool loadBaseRunData) :
         auto arrays = smspecList.back().getList();
         std::vector<int> vectIndices;
 
-        for (size_t n = 0; n < arrays.size(); n++)
-            if(std::find(vectList.begin(), vectList.end(), std::get<0>(arrays[n])) != vectList.end())
+        for (size_t n = 0; n < arrays.size(); n++) {
+            if (std::ranges::find(vectList, std::get<0>(arrays[n])) != vectList.end()) {
                vectIndices.push_back(static_cast<int>(n));
+            }
+        }
 
         smspecList.back().loadData(vectIndices);
 
@@ -311,9 +313,11 @@ ESmry::ESmry(const std::string &filename, bool loadBaseRunData) :
         auto arrays = smspecList.back().getList();
         std::vector<int> vectIndices;
 
-        for (size_t n = 0; n < arrays.size(); n++)
-            if(std::find(vectList.begin(), vectList.end(), std::get<0>(arrays[n])) != vectList.end())
+        for (size_t n = 0; n < arrays.size(); n++) {
+            if (std::ranges::find(vectList, std::get<0>(arrays[n])) != vectList.end()) {
                vectIndices.push_back(static_cast<int>(n));
+            }
+        }
 
         smspecList.back().loadData(vectIndices);
 
@@ -589,7 +593,7 @@ ESmry::ESmry(const std::string &filename, bool loadBaseRunData) :
 
             i++;
 
-            if (std::find(dataFileList.begin(), dataFileList.end(), std::get<1>(arraySourceList[i])) == dataFileList.end())
+            if (std::ranges::find(dataFileList, std::get<1>(arraySourceList[i])) == dataFileList.end())
             {
                 dataFileList.push_back(std::get<1>(arraySourceList[i]));
                 dataFileIndex++;
@@ -826,7 +830,7 @@ std::vector<int> ESmry::makeKeywPosVector(int specInd) const
 
     auto has_index = [&keywpos](const int ix)
     {
-        return std::find(keywpos.begin(), keywpos.end(), ix) != keywpos.end();
+        return std::ranges::find(keywpos, ix) != keywpos.end();
     };
 
     const auto& kwList = keywordListSpecFile[specInd];
@@ -1034,7 +1038,7 @@ ESmry::getListOfArrays(const std::string& filename, bool formatted)
         }
 
 
-        if ( std::find(ignore_keyword_list.begin(), ignore_keyword_list.end(), std::string(arrName)) == ignore_keyword_list.end()){
+        if (std::ranges::find(ignore_keyword_list, std::string(arrName)) == ignore_keyword_list.end()) {
             uint64_t filePos = static_cast<uint64_t>(ftell(ptr));
             std::tuple <std::string, uint64_t> t1;
             t1 = std::make_tuple(Opm::EclIO::trimr(arrName), filePos);
@@ -1090,11 +1094,14 @@ bool ESmry::make_esmry_file()
 
         int rstep_num = 0;
 
-        for (size_t i = 0; i < timeStepList.size(); i++)
-            if(std::find(seqIndex.begin(), seqIndex.end(), i) != seqIndex.end())
+        for (size_t i = 0; i < timeStepList.size(); ++i) {
+            if (std::ranges::find(seqIndex, i) != seqIndex.end()) {
                 is_rstep.push_back(++rstep_num);
-            else
+            }
+            else {
                 is_rstep.push_back(0);
+            }
+        }
 
         this->loadData();
 
@@ -1191,7 +1198,7 @@ void ESmry::updatePathAndRootName(std::filesystem::path& dir, std::filesystem::p
 
 bool ESmry::hasKey(const std::string &key) const
 {
-    return std::find(keyword.begin(), keyword.end(), key) != keyword.end();
+    return std::ranges::find(keyword, key) != keyword.end();
 }
 
 
@@ -1364,8 +1371,7 @@ const std::string& ESmry::get_unit(const SummaryNode& node) const {
 
 const std::vector<float>& ESmry::get(const std::string& name) const
 {
-    auto it = std::find(keyword.begin(), keyword.end(), name);
-
+    const auto it = std::ranges::find(keyword, name);
     if (it == keyword.end()) {
         OPM_THROW(std::invalid_argument, "keyword " + name + " not found ");
     }

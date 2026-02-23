@@ -42,7 +42,7 @@ namespace {
 
     std::vector<std::string> normalisedRegsetNames(std::vector<std::string> regSets)
     {
-        if (std::find(regSets.begin(), regSets.end(), "FIPNUM") == regSets.end()) {
+        if (std::ranges::find(regSets, "FIPNUM") == regSets.end()) {
             // Standard region set FIPNUM is always present, even if not
             // explicitly mentioned in the input.
             regSets.push_back("FIPNUM");

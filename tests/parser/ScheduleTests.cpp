@@ -439,9 +439,9 @@ BOOST_AUTO_TEST_CASE(CreateScheduleDeckWellsOrderedGRUPTREE)
     const auto schedule = make_schedule(createDeckWithWellsOrderedGRUPTREE());
     const auto group_names = schedule.groupNames("P*", 0);
 
-    BOOST_CHECK( std::find(group_names.begin(), group_names.end(), "PG1") != group_names.end() );
-    BOOST_CHECK( std::find(group_names.begin(), group_names.end(), "PG2") != group_names.end() );
-    BOOST_CHECK( std::find(group_names.begin(), group_names.end(), "PLATFORM") != group_names.end() );
+    BOOST_CHECK(std::ranges::find(group_names, "PG1") != group_names.end());
+    BOOST_CHECK(std::ranges::find(group_names, "PG2") != group_names.end());
+    BOOST_CHECK(std::ranges::find(group_names, "PLATFORM") != group_names.end());
 }
 
 
@@ -4566,7 +4566,7 @@ COMPDAT
         const auto& changed_wells = schedule.changed_wells(0);
         BOOST_CHECK_EQUAL( changed_wells.size() , 3U);
         for (const auto& wname : {"W1", "W2", "W2"}) {
-            auto find_well = std::find(changed_wells.begin(), changed_wells.end(), wname);
+            const auto find_well = std::ranges::find(changed_wells, wname);
             BOOST_CHECK(find_well != changed_wells.end());
         }
     }

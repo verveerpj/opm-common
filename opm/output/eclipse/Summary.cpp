@@ -5630,9 +5630,7 @@ configureUDQ(const EclipseState& es,
 
     auto has_evaluator = [this](const auto& key)
     {
-        return std::find(this->valueKeys_.begin(),
-                         this->valueKeys_.end(), key)
-            != this->valueKeys_.end();
+        return std::ranges::find(this->valueKeys_, key) != this->valueKeys_.end();
     };
 
     for (const auto& node : requisite_udq_and_action_summary_nodes(es, sched, summary_config)) {

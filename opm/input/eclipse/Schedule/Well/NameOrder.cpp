@@ -116,8 +116,7 @@ GroupOrder GroupOrder::serializationTestObject()
 
 void GroupOrder::add(const std::string& gname)
 {
-    auto iter = std::find(this->name_list_.begin(),
-                          this->name_list_.end(), gname);
+    const auto iter = std::ranges::find(this->name_list_, gname);
     if (iter == this->name_list_.end()) {
         this->name_list_.push_back(gname);
     }
@@ -125,8 +124,7 @@ void GroupOrder::add(const std::string& gname)
 
 bool GroupOrder::has(const std::string& gname) const
 {
-    return std::find(this->name_list_.begin(), this->name_list_.end(), gname)
-        != this->name_list_.end();
+    return std::ranges::find(this->name_list_, gname) != this->name_list_.end();
 }
 
 bool GroupOrder::anyGroupMatches(const std::string& pattern) const

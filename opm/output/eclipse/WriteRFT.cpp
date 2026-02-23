@@ -1054,7 +1054,7 @@ namespace {
         if (*connRng.first != connIx) {
             // Not first connection in `segNum`.  Typical case.  Neighbour
             // is next connection closer to the outlet.
-            auto i = std::find(connRng.first, connRng.second, connIx);
+            const auto i = std::find(connRng.first, connRng.second, connIx);
             assert (i != connRng.second);
             return getConnectionId(*(i - 1));
         }
