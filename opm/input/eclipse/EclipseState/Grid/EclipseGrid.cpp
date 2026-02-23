@@ -432,12 +432,12 @@ EclipseGrid::EclipseGrid(const Deck& deck, const int * actnum)
         if (deck.hasKeyword<ParserKeywords::MINPV>()) {
             const auto& record = deck.get<ParserKeywords::MINPV>( ).back().getRecord(0);
             const auto& item = record.getItem<ParserKeywords::MINPV::VALUE>( );
-            std::fill(m_minpvVector.begin(), m_minpvVector.end(), item.getSIDouble(0));
+            std::ranges::fill(m_minpvVector, item.getSIDouble(0));
             m_minpvMode = MinpvMode::EclSTD;
         } else if (deck.hasKeyword<ParserKeywords::MINPORV>()) {
             const auto& record = deck.get<ParserKeywords::MINPORV>( ).back().getRecord(0);
             const auto& item = record.getItem<ParserKeywords::MINPORV::VALUE>( );
-            std::fill(m_minpvVector.begin(), m_minpvVector.end(), item.getSIDouble(0));
+            std::ranges::fill(m_minpvVector, item.getSIDouble(0));
             m_minpvMode = MinpvMode::EclSTD;
         }
         // Note that MINPVV is not handled here but in a second stage in EclipseState where we
@@ -1129,7 +1129,7 @@ EclipseGrid::EclipseGrid(const Deck& deck, const int * actnum)
             if (dzv.size() != this->getNZ())
                 throw std::invalid_argument("DZV keyword should have exactly " + std::to_string( this->getNZ() ) + " elements");
             for (std::size_t k= 0; k < this->getNZ(); k++)
-                std::fill(dz.begin() + k*area, dz.begin() + (k+1)*area, dzv[k]);
+                std::fill_n(dz.begin() + k*area, area, dzv[k]);
         }
 
         if (tops.size() != (this->getNX() * this->getNY()))

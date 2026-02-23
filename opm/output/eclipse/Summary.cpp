@@ -5742,7 +5742,7 @@ getNextMiniStep(const int  report_step,
 
     ms.params.resize(this->valueKeys_.size(), 0.0f);
 
-    std::fill(ms.params.begin(), ms.params.end(), 0.0f);
+    std::ranges::fill(ms.params, 0.0f);
 
     return ms;
 }

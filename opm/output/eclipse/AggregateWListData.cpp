@@ -98,7 +98,7 @@ std::vector<std::vector<std::size_t>> wellOrderInWList(const Opm::Schedule&   sc
         }
         //store vector in map - and reset vector values to zero
         curWelOrd.push_back(well_order);
-        std::fill(well_order.begin(), well_order.end(), 0);
+        std::ranges::fill(well_order, 0);
     }
     return curWelOrd;
 }
