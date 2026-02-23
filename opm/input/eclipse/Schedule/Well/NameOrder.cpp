@@ -151,11 +151,9 @@ std::vector<std::string> GroupOrder::names(const std::string& pattern) const
     {
         gnames.reserve(this->name_list_.size());
 
-        std::copy_if(this->name_list_.begin(),
-                     this->name_list_.end(),
-                     std::back_inserter(gnames),
-                     [&pattern](const auto& gname)
-                     { return shmatch(pattern, gname); });
+        std::ranges::copy_if(this->name_list_, std::back_inserter(gnames),
+                             [&pattern](const auto& gname)
+                             { return shmatch(pattern, gname); });
     }
     else if (this->has(pattern)) {
         // Normal group name without any special characters.

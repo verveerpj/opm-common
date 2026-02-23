@@ -156,9 +156,8 @@ std::optional<Branch> ExtNetwork::uptree_branch(const std::string& node) const
     }
 
     std::vector<Branch> branch;
-    std::copy_if(this->m_branches.begin(), this->m_branches.end(),
-                 std::back_inserter(branch),
-                 [&node](const Branch& b) { return b.downtree_node() == node; });
+    std::ranges::copy_if(this->m_branches, std::back_inserter(branch),
+                         [&node](const Branch& b) { return b.downtree_node() == node; });
 
     if (branch.empty()) {
         return {};
@@ -179,9 +178,8 @@ std::vector<Branch> ExtNetwork::downtree_branches(const std::string& node) const
     }
 
     std::vector<Branch> branch;
-    std::copy_if(this->m_branches.begin(), this->m_branches.end(),
-                 std::back_inserter(branch),
-                 [&node](const Branch& b) { return b.uptree_node() == node; });
+    std::ranges::copy_if(this->m_branches, std::back_inserter(branch),
+                         [&node](const Branch& b) { return b.uptree_node() == node; });
     return branch;
 }
 

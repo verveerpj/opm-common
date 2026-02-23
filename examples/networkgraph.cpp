@@ -436,9 +436,8 @@ NetWork::parse_unrst(const std::filesystem::path& inputFileName)
 
     std::vector<int> rstep_vect;
 
-    std::copy_if(all_reports.begin(), all_reports.end(),
-                 std::back_inserter(rstep_vect),
-                 [](const auto r) { return r > 0; });
+    std::ranges::copy_if(all_reports, std::back_inserter(rstep_vect),
+                         [](const auto r) { return r > 0; });
 
     m_node_input_list.push_back({});
     m_bran_input_list.push_back({});

@@ -593,11 +593,9 @@ std::vector<Opm::time_point> ExtESmry::dates()
 std::vector<std::string> ExtESmry::keywordList(const std::string& pattern) const
 {
     std::vector<std::string> list;
-    std::copy_if(m_keyword.begin(), m_keyword.end(), std::back_inserter(list),
-                 [&pattern](const auto& key)
-                 {
-                     return shmatch(pattern, key);
-                 });
+    std::ranges::copy_if(m_keyword, std::back_inserter(list),
+                         [&pattern](const auto& key)
+                         { return shmatch(pattern, key); });
 
     return list;
 }

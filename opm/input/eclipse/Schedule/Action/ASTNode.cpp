@@ -384,9 +384,9 @@ Opm::Action::ASTNode::getWellList(const Context& context) const
     auto wnames = std::vector<std::string>{};
     wnames.reserve(wells.size());
 
-    std::copy_if(wells.begin(), wells.end(), std::back_inserter(wnames),
-                 [wpatt = normalisePattern(this->arg_list.front())]
-                 (const auto& well) { return shmatch(wpatt, well); });
+    std::ranges::copy_if(wells, std::back_inserter(wnames),
+                         [wpatt = normalisePattern(this->arg_list.front())]
+                         (const auto& well) { return shmatch(wpatt, well); });
 
     return wnames;
 }
