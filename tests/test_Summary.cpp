@@ -3425,19 +3425,19 @@ BOOST_AUTO_TEST_CASE(Test_SummaryState)
 
     const auto& gwct_groups = st.groups("GWCT");
     BOOST_CHECK_EQUAL( gwct_groups.size(), 2U);
-    BOOST_CHECK_EQUAL(std::count(gwct_groups.begin(), gwct_groups.end(), "G1"), 1U);
-    BOOST_CHECK_EQUAL(std::count(gwct_groups.begin(), gwct_groups.end(), "G2"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(gwct_groups, "G1"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(gwct_groups, "G2"), 1U);
     const auto& all_groups = st.groups();
     BOOST_CHECK_EQUAL( all_groups.size(), 3U);
-    BOOST_CHECK_EQUAL(std::count(all_groups.begin(), all_groups.end(), "G1"), 1U);
-    BOOST_CHECK_EQUAL(std::count(all_groups.begin(), all_groups.end(), "G2"), 1U);
-    BOOST_CHECK_EQUAL(std::count(all_groups.begin(), all_groups.end(), "G3"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(all_groups, "G1"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(all_groups, "G2"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(all_groups, "G3"), 1U);
 
     const auto& all_wells = st.wells();
     BOOST_CHECK_EQUAL( all_wells.size(), 3U);
-    BOOST_CHECK_EQUAL(std::count(all_wells.begin(), all_wells.end(), "OP1"), 1U);
-    BOOST_CHECK_EQUAL(std::count(all_wells.begin(), all_wells.end(), "OP2"), 1U);
-    BOOST_CHECK_EQUAL(std::count(all_wells.begin(), all_wells.end(), "OP3"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(all_wells, "OP1"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(all_wells, "OP2"), 1U);
+    BOOST_CHECK_EQUAL(std::ranges::count(all_wells, "OP3"), 1U);
 
     // The well 'OP_2' which was indirectly added with the
     // st.update("WWCT:OP_2", 100) call is *not* counted as a well!

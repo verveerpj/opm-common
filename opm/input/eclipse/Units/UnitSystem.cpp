@@ -1606,7 +1606,7 @@ namespace {
     }
 
     Dimension UnitSystem::parse(const std::string& dimension) const {
-        const size_t divCount = std::count( dimension.begin() , dimension.end() , '/' );
+        const std::size_t divCount = std::ranges::count(dimension, '/');
 
         if( divCount > 1 )
                 throw std::invalid_argument("Dimension string can only have one division sign '/'");
