@@ -551,14 +551,14 @@ namespace Opm {
 
     std::size_t UDQConfig::size() const
     {
-        return std::count_if(this->input_index.begin(), this->input_index.end(),
-                             [](const auto& index_pair)
-                             {
-                                 const auto action = index_pair.second.action;
+        return std::ranges::count_if(this->input_index,
+                                     [](const auto& index_pair)
+                                     {
+                                         const auto action = index_pair.second.action;
 
-                                 return (action == UDQAction::DEFINE)
-                                     || (action == UDQAction::ASSIGN);
-                             });
+                                         return (action == UDQAction::DEFINE)
+                                             || (action == UDQAction::ASSIGN);
+                                     });
     }
 
     UDQInput UDQConfig::operator[](const std::string& keyword) const

@@ -171,7 +171,9 @@ void ERsm::load_block(std::deque<std::string>& lines, std::size_t& vector_length
     auto wgnames = split_line(pop_return(lines));
     auto nums_list = split_line(pop_return(lines));
     pop_separator(lines);
-    std::size_t num_rows = std::count_if(kw_list.begin(), kw_list.end(), [](const std::string& kw) { return !kw.empty();}) - 1;
+    const std::size_t num_rows = std::ranges::count_if(kw_list,
+                                                       [](const std::string& kw)
+                                                       { return !kw.empty();}) - 1;
 
     if (vector_length == 0) {
         if (kw_list[0] == "DATE")

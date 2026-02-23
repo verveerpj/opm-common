@@ -91,9 +91,9 @@ namespace {
                                [&kw, &rst](const auto count, const auto step)
                                {
                                    const auto list = rst.listOfRstArrays(step);
-                                   return count + std::count_if(list.begin(), list.end(),
-                                                                [&kw](const auto& vec)
-                                                                { return std::get<0>(vec) == kw; });
+                                   return count + std::ranges::count_if(list,
+                                                                        [&kw](const auto& vec)
+                                                                        { return std::get<0>(vec) == kw; });
                                });
     }
 

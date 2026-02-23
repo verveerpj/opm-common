@@ -842,9 +842,9 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
 
     std::size_t WellConnections::num_open() const
     {
-        return std::count_if(this->m_connections.begin(),
-                             this->m_connections.end(),
-                             [] (const Connection& c) { return c.state() == Connection::State::OPEN; });
+        return std::ranges::count_if(this->m_connections,
+                                     [] (const Connection& c)
+                                     { return c.state() == Connection::State::OPEN; });
     }
 
     bool WellConnections::empty() const

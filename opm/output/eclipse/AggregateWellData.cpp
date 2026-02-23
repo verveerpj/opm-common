@@ -514,7 +514,7 @@ namespace {
 
             const auto& conns = well.getConnections();
 
-            iWell[Ix::NConn]  = std::count_if(conns.begin(), conns.end(), isRegularConn);
+            iWell[Ix::NConn]  = std::ranges::count_if(conns, isRegularConn);
             iWell[Ix::IHead]  = well.getHeadI() + 1;
             iWell[Ix::JHead]  = well.getHeadJ() + 1;
             iWell[Ix::FirstK] = 0;

@@ -269,10 +269,9 @@ std::size_t ScheduleState::num_lgr_well_in_group(const Group& grp, const std::st
 
     const auto& lwells = grp.wells();
 
-    return std::count_if(lwells.begin(), lwells.end(), [&lgr_tag, this](const std::string& wname)
-    {
-        return this->wells(wname).get_lgr_well_tag().value_or("") == lgr_tag;
-    });
+    return std::ranges::count_if(lwells,
+                                 [&lgr_tag, this](const std::string& wname)
+                                 { return this->wells(wname).get_lgr_well_tag().value_or("") == lgr_tag; });
 }
 
 std::size_t ScheduleState::num_lgr_groups_in_group(const Group& grp, const std::string& lgr_tag) const
@@ -283,10 +282,9 @@ std::size_t ScheduleState::num_lgr_groups_in_group(const Group& grp, const std::
 
     const auto& children = grp.groups();
 
-    return std::count_if(children.begin(), children.end(), [&lgr_tag, this](const std::string& child)
-    {
-        return this->group_contains_lgr(this->groups(child), lgr_tag);
-    });
+    return std::ranges::count_if(children,
+                                 [&lgr_tag, this](const std::string& child)
+                                 { return this->group_contains_lgr(this->groups(child), lgr_tag); });
 }
 
 void ScheduleState::init_nupcol(Nupcol nupcol) {

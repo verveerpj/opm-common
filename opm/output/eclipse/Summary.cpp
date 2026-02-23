@@ -1365,10 +1365,10 @@ inline quantity flowing( const fn_args& args ) {
             && xwPos->second.flowing();
     };
 
-    return { double( std::count_if( args.schedule_wells.begin(),
-                                    args.schedule_wells.end(),
-                                    pred ) ),
-             measure::identity };
+    return {
+        double( std::ranges::count_if(args.schedule_wells, pred)),
+        measure::identity
+    };
 }
 
 template< rt phase, bool injection = true>
