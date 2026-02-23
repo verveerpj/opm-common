@@ -23,6 +23,7 @@ include(MPIChecks)
 include(UseOpenMP)
 include(UseOptimization)
 include(UseRunPath)
+include(UseTracy)
 include(UseWarnings)
 
 # needed for Debian installation scheme
@@ -52,6 +53,9 @@ function(opm_add_target_options)
 
   # Parallel programming.
   use_openmp(TARGET ${PARAM_TARGET})
+
+  # Tracy profiler
+  use_tracy(TARGET ${PARAM_TARGET})
 
   # output binaries in 'bin' folder
   set_target_properties(${PARAM_TARGET}
