@@ -135,7 +135,8 @@ UDQSet UDQScalarFunction::AVEG(const UDQSet& arg)
         return UDQSet::empty("AVEG");
     }
 
-    if (std::find_if(defined_values.begin(), defined_values.end(), [](double x) { return x <= 0; }) != defined_values.end())
+    if (std::ranges::find_if(defined_values,
+                             [](double x) { return x <= 0; }) != defined_values.end())
     {
         throw std::invalid_argument("Function AVEG must have only positive arguments");
     }

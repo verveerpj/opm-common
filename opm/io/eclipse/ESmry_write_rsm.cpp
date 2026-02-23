@@ -249,7 +249,9 @@ void ESmry::write_rsm(std::ostream& os) const
       principle embark on a more general sorting here.
     */
     if (data_vectors[0].keyword != "YEARS") {
-        auto years_iter = std::find_if(data_vectors.begin(), data_vectors.end(), [](const SummaryNode& node) { return (node.keyword == "YEARS"); });
+        auto years_iter = std::ranges::find_if(data_vectors,
+                                               [](const SummaryNode& node)
+                                               { return (node.keyword == "YEARS"); });
         if (years_iter != data_vectors.end())
             std::swap(data_vectors[0], *years_iter);
     }

@@ -238,9 +238,9 @@ std::optional<std::size_t>
 FileDeck::Block::find(const std::string& keyword,
                       const std::size_t keyword_index) const
 {
-    auto iter = std::find_if(this->keywords.begin() + keyword_index, this->keywords.end(),
-                             [&keyword](const DeckKeyword& kw)
-                             { return kw.name() == keyword; });
+    const auto iter = std::find_if(this->keywords.begin() + keyword_index, this->keywords.end(),
+                                   [&keyword](const DeckKeyword& kw)
+                                   { return kw.name() == keyword; });
     if (iter == this->keywords.end()) {
         return {};
     }

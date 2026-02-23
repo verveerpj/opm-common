@@ -86,7 +86,7 @@ namespace Opm {
             return e.name() == name;
         };
 
-        auto item = std::find_if( m_items.begin(), m_items.end(), eq );
+        const auto item = std::ranges::find_if(m_items, eq);
 
         if( item == m_items.end() )
             throw std::invalid_argument("Item: " + name + " does not exist.");
@@ -110,7 +110,7 @@ namespace Opm {
             return e.name() == name;
         };
 
-        auto item = std::find_if( this->begin(), this->end(), eq );
+        const auto item = std::ranges::find_if(*this, eq);
 
         if( item == m_items.end() )
             throw std::invalid_argument("Item: " + name + " does not exist.");

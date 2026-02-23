@@ -1088,10 +1088,10 @@ namespace Opm { namespace data {
         const Connection*
         find_connection(const Connection::global_index connection_grid_index) const
         {
-            auto connection = std::find_if(this->connections.begin(),
-                                           this->connections.end(),
-                                           [connection_grid_index](const Connection& c)
-                                           { return c.index == connection_grid_index; });
+            const auto connection =
+                std::ranges::find_if(this->connections,
+                                     [connection_grid_index](const Connection& c)
+                                     { return c.index == connection_grid_index; });
 
             if (connection == this->connections.end()) {
                 return nullptr;
@@ -1103,10 +1103,10 @@ namespace Opm { namespace data {
         Connection*
         find_connection(const Connection::global_index connection_grid_index)
         {
-            auto connection = std::find_if(this->connections.begin(),
-                                           this->connections.end(),
-                                           [connection_grid_index](const Connection& c)
-                                           { return c.index == connection_grid_index; });
+            const auto connection =
+                std::ranges::find_if(this->connections,
+                                     [connection_grid_index](const Connection& c)
+                                     { return c.index == connection_grid_index; });
 
             if (connection == this->connections.end()) {
                 return nullptr;
@@ -1197,15 +1197,16 @@ namespace Opm { namespace data {
             if( witr == this->end() ) return 0.0;
 
             const auto& well = witr->second;
-            const auto& connection = std::find_if( well.connections.begin() ,
-                                                   well.connections.end() ,
-                                                   [=]( const Connection& c ) {
-                                                        return c.index == connection_grid_index; });
+            const auto connection =
+                std::ranges::find_if(well.connections,
+                                     [connection_grid_index](const Connection& c)
+                                     { return c.index == connection_grid_index; });
 
-            if( connection == well.connections.end() )
+            if (connection == well.connections.end()) {
                 return 0.0;
+            }
 
-            return connection->rates.get( m, 0.0 );
+            return connection->rates.get(m, 0.0);
         }
 
         template <class MessageBufferType>

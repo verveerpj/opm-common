@@ -3146,11 +3146,11 @@ WELOPEN
     BOOST_CHECK_EQUAL( conn1.size(), 3);
     for (const auto& conn : conn_all) {
         if (conn.complnum() == 1) {
-            auto conn_iter = std::find_if(conn1.begin(), conn1.end(), [&conn](const Connection * cptr)
-                                                                      {
-                                                                          return *cptr == conn;
-                                                                      });
-            BOOST_CHECK( conn_iter != conn1.end() );
+            const auto conn_iter =
+                    std::ranges::find_if(conn1,
+                                         [&conn](const Connection* cptr)
+                                         { return *cptr == conn; });
+            BOOST_CHECK(conn_iter != conn1.end());
         }
     }
 

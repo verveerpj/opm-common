@@ -484,9 +484,9 @@ void RSTConfig::handleRPTSCHED(const DeckKeyword&  keyword,
 {
     auto mnemonic_list = normaliseRptSchedKeyword(keyword, parseContext, errors);
 
-    auto nothingPos = std::find_if(mnemonic_list.begin(), mnemonic_list.end(),
-                                   [](const auto& mnemonicPair)
-                                   { return mnemonicPair.first == "NOTHING"; });
+    auto nothingPos = std::ranges::find_if(mnemonic_list,
+                                           [](const auto& mnemonicPair)
+                                           { return mnemonicPair.first == "NOTHING"; });
 
     if (nothingPos != mnemonic_list.end()) {
         this->basic = {};

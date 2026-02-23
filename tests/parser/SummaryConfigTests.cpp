@@ -1134,11 +1134,9 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SOFR:INJE01:1"));
 
     {
-        auto sofr = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SOFR";
-        });
+        const auto sofr = std::ranges::find_if(summary,
+                                               [](const SummaryConfigNode& node)
+                                               { return node.keyword() == "SOFR"; });
 
         BOOST_REQUIRE(sofr != summary.end());
 
@@ -1187,11 +1185,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SOFRF:INJE01:1"));
 
     {
-        auto sofrf = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SOFRF";
-        });
+        const auto sofrf =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SOFRF"; });
 
         BOOST_REQUIRE(sofrf != summary.end());
 
@@ -1240,11 +1237,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SOFRS:INJE01:1"));
 
     {
-        auto sofrs = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SOFRS";
-        });
+        const auto sofrs =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SOFRS"; });
 
         BOOST_REQUIRE(sofrs != summary.end());
 
@@ -1293,11 +1289,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SOGR:INJE01:1"));
 
     {
-        auto sogr = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SOGR";
-        });
+        const auto sogr =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SOGR"; });
 
         BOOST_REQUIRE(sogr != summary.end());
 
@@ -1344,11 +1339,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SGFR:PROD01:27"));  // No such segment.
 
     {
-        auto sgfr = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SGFR";
-        });
+        const auto sgfr =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SGFR"; });
 
         BOOST_REQUIRE(sgfr != summary.end());
 
@@ -1395,11 +1389,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SGFRF:PROD01:27"));  // No such segment.
 
     {
-        auto sgfrf = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SGFRF";
-        });
+        const auto sgfrf =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SGFRF"; });
 
         BOOST_REQUIRE(sgfrf != summary.end());
 
@@ -1446,11 +1439,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SGFRS:PROD01:27"));  // No such segment.
 
     {
-        auto sgfrs = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SGFRS";
-        });
+        const auto sgfrs =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SGFRS"; });
 
         BOOST_REQUIRE(sgfrs != summary.end());
 
@@ -1498,11 +1490,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SGOR:INJE01:10"));
 
     {
-        auto sgor = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SGOR";
-        });
+        const auto sgor =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SGOR"; });
 
         BOOST_REQUIRE(sgor != summary.end());
 
@@ -1550,11 +1541,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SPR:INJE01:10"));
 
     {
-        auto spr = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SPR";
-        });
+        const auto spr =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SPR"; });
 
         BOOST_REQUIRE(spr != summary.end());
 
@@ -1602,11 +1592,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SWFR:INJE01:1"));
 
     {
-        auto swfr = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SWFR";
-        });
+        const auto swfr =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SWFR"; });
 
         BOOST_REQUIRE(swfr != summary.end());
 
@@ -1654,11 +1643,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SWGR:INJE01:1"));
 
     {
-        auto swgr = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SWGR";
-        });
+        const auto swgr =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SWGR"; });
 
         BOOST_REQUIRE(swgr != summary.end());
 
@@ -1706,11 +1694,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SPRD:INJE01:1"));
 
     {
-        auto sprd = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SPRD";
-        });
+        const auto sprd =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SPRD"; });
 
         BOOST_REQUIRE(sprd != summary.end());
 
@@ -1758,11 +1745,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SPRDH:INJE01:1"));
 
     {
-        auto sprdh = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SPRDH";
-        });
+        const auto sprdh =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SPRDH"; });
 
         BOOST_REQUIRE(sprdh != summary.end());
 
@@ -1810,11 +1796,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SPRDF:INJE01:1"));
 
     {
-        auto sprdf = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SPRDF";
-        });
+        const auto sprdf =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SPRDF"; });
 
         BOOST_REQUIRE(sprdf != summary.end());
 
@@ -1864,11 +1849,10 @@ BOOST_AUTO_TEST_CASE(Summary_Segment)
     BOOST_CHECK(!summary.hasSummaryKey("SPRDA:INJE01:16"));
 
     {
-        auto sprda = std::find_if(summary.begin(), summary.end(),
-            [](const SummaryConfigNode& node)
-        {
-            return node.keyword() == "SPRDA";
-        });
+        const auto sprda =
+            std::ranges::find_if(summary,
+                                 [](const SummaryConfigNode& node)
+                                 { return node.keyword() == "SPRDA"; });
 
         BOOST_REQUIRE(sprda != summary.end());
 

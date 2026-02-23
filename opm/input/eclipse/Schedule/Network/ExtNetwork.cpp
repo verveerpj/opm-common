@@ -140,9 +140,12 @@ void ExtNetwork::add_or_replace_branch(Branch branch)
 
 void ExtNetwork::drop_branch(const std::string& uptree_node, const std::string& downtree_node)
 {
-    auto branch_iter = std::find_if(this->m_branches.begin(),
-                                    this->m_branches.end(),
-                                    [&uptree_node, &downtree_node](const Branch& b) { return (b.uptree_node() == uptree_node && b.downtree_node() == downtree_node); });
+    auto branch_iter = std::ranges::find_if(this->m_branches,
+                                            [&uptree_node, &downtree_node](const Branch& b)
+                                            {
+                                                return b.uptree_node() == uptree_node &&
+                                                       b.downtree_node() == downtree_node;
+                                            });
     if (branch_iter != this->m_branches.end()) {
         this->m_branches.erase(branch_iter);
     }

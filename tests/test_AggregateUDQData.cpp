@@ -243,13 +243,14 @@ namespace {
                       const std::string&                            udq,
                       const std::string&                            wgname)
     {
-        auto find_iter = std::find_if(records.begin(), records.end(),
-            [&control, &udq, &wgname](const Opm::UDQActive::RstRecord& record)
-            {
-                return (record.control == control)
-                    && (record.wgname == wgname)
-                    && (record.value.get<std::string>() == udq);
-            });
+        const auto find_iter =
+            std::ranges::find_if(records,
+                                 [&control, &udq, &wgname](const Opm::UDQActive::RstRecord& record)
+                                 {
+                                     return (record.control == control)
+                                         && (record.wgname == wgname)
+                                         && (record.value.get<std::string>() == udq);
+                                 });
 
         return find_iter != records.end();
     }

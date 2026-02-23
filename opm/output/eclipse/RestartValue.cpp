@@ -96,26 +96,22 @@ namespace Opm {
     }
 
 
-    const std::vector<double>& RestartValue::getExtra(const std::string& key) const {
-        const auto iter = std::find_if(this->extra.begin(),
-                                       this->extra.end(),
-                                       [&](const std::pair<RestartKey, std::vector<double>>& pair)
-                                       {
-                                         return (pair.first.key == key);
-                                       });
+    const std::vector<double>& RestartValue::getExtra(const std::string& key) const
+    {
+        const auto iter = std::ranges::find_if(this->extra,
+                                              [&key](const auto& pair)
+                                              { return (pair.first.key == key); });
         if (iter == this->extra.end())
             throw std::invalid_argument("No such extra key " + key);
 
         return iter->second;
     }
 
-    bool RestartValue::hasExtra(const std::string& key) const {
-        const auto iter = std::find_if(this->extra.begin(),
-                                       this->extra.end(),
-                                       [&](const std::pair<RestartKey, std::vector<double>>& pair)
-                                       {
-                                         return (pair.first.key == key);
-                                       });
+    bool RestartValue::hasExtra(const std::string& key) const
+    {
+        const auto iter = std::ranges::find_if(this->extra,
+                                       [&key](const auto& pair)
+                                       { return (pair.first.key == key); });
         return  (iter != this->extra.end());
     }
 

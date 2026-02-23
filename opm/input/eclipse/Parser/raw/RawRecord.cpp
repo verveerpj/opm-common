@@ -52,7 +52,7 @@ std::deque< std::string_view > splitSingleRecordString( const std::string_view& 
             dst.push_back(record.substr(beg, size));
             current = quote_end;
         } else {
-            auto token_end = std::find_if( current, record.end(), RawConsts::is_separator() );
+            const auto token_end = std::find_if(current, record.end(), RawConsts::is_separator());
             const std::size_t beg = std::distance(record.begin(), current);
             const std::size_t size = std::distance(current, token_end);
             dst.push_back(record.substr(beg, size));

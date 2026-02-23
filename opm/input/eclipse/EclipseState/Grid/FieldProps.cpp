@@ -2051,9 +2051,9 @@ void FieldProps::processMULTREGP(const Deck& deck)
             // for the multiplier item in keyword MULTREGP.
             const auto multiplier = record.getItem<Kw::MULTIPLIER>().get<double>(0);
 
-            auto iter = std::find_if(this->multregp.begin(), this->multregp.end(),
-                                     [region_value](const MultregpRecord& mregp)
-                                     { return mregp.region_value == region_value; });
+            const auto iter = std::ranges::find_if(this->multregp,
+                                                  [region_value](const MultregpRecord& mregp)
+                                                  { return mregp.region_value == region_value; });
 
             // There is some weirdness if the same region value is entered
             // in several records, then only the last applies.

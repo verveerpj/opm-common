@@ -37,9 +37,9 @@ namespace {
     auto findActionByName(ActionCollection&& actions,
                           const std::string& name)
     {
-        return std::find_if(std::begin(actions), std::end(actions),
-                            [&name](const auto& action)
-                            { return action.name() == name; });
+        return std::ranges::find_if(actions,
+                                    [&name](const auto& action)
+                                    { return action.name() == name; });
     }
 
 } // Anonymous namespace

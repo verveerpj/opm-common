@@ -1295,9 +1295,9 @@ void keywordMISC(SummaryConfig::keyword_list& list,
 {
     const auto metaKw = meta_keywords();
 
-    auto pos = std::find_if(metaKw.begin(), metaKw.end(),
-                            [&keyword](const auto& meta)
-                            { return meta.first == keyword; });
+    const auto pos = std::ranges::find_if(metaKw,
+                                          [&keyword](const auto& meta)
+                                          { return meta.first == keyword; });
 
     if (pos == metaKw.end()) {
         list.emplace_back(keyword, SummaryConfigNode::Category::Miscellaneous, std::move(loc));

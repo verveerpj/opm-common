@@ -209,17 +209,18 @@ inline Itr find_terminator( Itr begin, Itr end, Term terminator ) {
 
     if( pos == begin || pos == end) return pos;
 
-    auto qbegin = std::find_if( begin, end, RawConsts::is_quote() );
+    const auto qbegin = std::find_if(begin, end, RawConsts::is_quote());
 
-    if( qbegin == end || qbegin > pos )
+    if (qbegin == end || qbegin > pos) {
         return pos;
+    }
 
-    auto qend = std::find( qbegin + 1, end, *qbegin );
+    const auto qend = std::find(qbegin + 1, end, *qbegin);
 
     // Quotes are not balanced - probably an error?!
-    if( qend == end ) return end;
+    if (qend == end) return end;
 
-    return find_terminator( qend + 1, end, terminator );
+    return find_terminator(qend + 1, end, terminator);
 }
 
 /**
@@ -423,9 +424,10 @@ inline std::string clean(const std::vector<std::pair<std::string, std::string>>&
 
 
 
-inline std::string make_deck_name(const std::string_view& str) {
-    auto first_sep = std::find_if( str.begin(), str.end(), RawConsts::is_separator() );
-    return uppercase( std::string( str.substr( 0, first_sep - str.begin()) ));
+inline std::string make_deck_name(const std::string_view& str)
+{
+    const auto first_sep = std::ranges::find_if(str, RawConsts::is_separator());
+    return uppercase(std::string(str.substr(0, first_sep - str.begin())));
 }
 
 
@@ -1748,12 +1750,9 @@ bool parseState( ParserState& parserState, const Parser& parser, ErrorGuard& err
 
     const ParserKeyword* Parser::matchingKeyword(const std::string_view& name) const
     {
-        const auto it = std::find_if(m_wildCardKeywords.begin(),
-                                     m_wildCardKeywords.end(),
-                                     [&name](const auto& wild)
-                                     {
-                                         return wild.second->matches(name);
-                                     });
+        const auto it = std::ranges::find_if(m_wildCardKeywords,
+                                             [&name](const auto& wild)
+                                             { return wild.second->matches(name); });
         return it != m_wildCardKeywords.end() ? it->second : nullptr;
     }
 

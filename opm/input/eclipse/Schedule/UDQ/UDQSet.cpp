@@ -499,11 +499,9 @@ const UDQScalar& UDQSet::operator[](std::size_t index) const
 
 const UDQScalar& UDQSet::operator[](const std::string& wgname) const
 {
-    auto value_iter = std::find_if(this->values.begin(), this->values.end(),
-                                   [&wgname](const UDQScalar& value)
-                                   {
-                                       return value.wgname() == wgname;
-                                   });
+    const auto value_iter = std::ranges::find_if(this->values,
+                                                 [&wgname](const UDQScalar& value)
+                                                 { return value.wgname() == wgname; });
 
     if (value_iter == this->values.end()) {
         throw std::out_of_range("No such well/group: " + wgname);
@@ -516,12 +514,12 @@ const UDQScalar&
 UDQSet::operator()(const std::string& well,
                    const std::size_t  item) const
 {
-    auto value_iter = std::find_if(this->values.begin(), this->values.end(),
-                                   [&well, item](const UDQScalar& value)
-                                   {
-                                       return (value.number() == item)
-                                           && (value.wgname() == well);
-                                   });
+    const auto value_iter = std::ranges::find_if(this->values,
+                                                 [&well, item](const UDQScalar& value)
+                                                 {
+                                                     return (value.number() == item)
+                                                         && (value.wgname() == well);
+                                                 });
 
     if (value_iter == this->values.end()) {
         throw std::out_of_range {
