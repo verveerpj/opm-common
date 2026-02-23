@@ -79,9 +79,9 @@ namespace Opm {
 
         auto isConnected = [lgr_grid](const std::vector<data::Connection>& connections)
         {
-            return std::any_of(connections.begin(), connections.end(),
-                               [lgr_grid](const auto& conn)
-                               { return conn.lgr_grid == lgr_grid; });
+            return std::ranges::any_of(connections,
+                                       [lgr_grid](const auto& conn)
+                                       { return conn.lgr_grid == lgr_grid; });
         };
 
         for (const auto& [well_name, well_data] : this->wells ) {

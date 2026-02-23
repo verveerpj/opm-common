@@ -129,9 +129,9 @@ namespace {
     bool name_match_any(const std::unordered_set<std::string>& patterns,
                         const std::string& name)
     {
-        return std::any_of(patterns.begin(), patterns.end(),
-                           [&name](const auto& pattern)
-                           { return Opm::shmatch(pattern, name); });
+        return std::ranges::any_of(patterns,
+                                   [&name](const auto& pattern)
+                                   { return Opm::shmatch(pattern, name); });
     }
 }
 

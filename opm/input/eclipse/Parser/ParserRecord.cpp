@@ -94,9 +94,11 @@ namespace {
     }
 
 
-    bool ParserRecord::hasDimension() const {
-        return std::any_of( this->begin(), this->end(),
-                            []( const ParserItem& x ) { return x.dimensions().size() > 0; } );
+    bool ParserRecord::hasDimension() const
+    {
+        return std::ranges::any_of(*this,
+                                   [](const ParserItem& x)
+                                   { return x.dimensions().size() > 0; } );
     }
 
 
@@ -106,10 +108,9 @@ namespace {
         return this->m_items.at( index );
     }
 
-    bool ParserRecord::hasItem( const std::string& name ) const {
-        return std::any_of( this->m_items.begin(),
-                            this->m_items.end(),
-                            name_eq( name ) );
+    bool ParserRecord::hasItem(const std::string& name) const
+    {
+        return std::ranges::any_of(this->m_items, name_eq(name));
     }
 
     const ParserItem& ParserRecord::get( const std::string& name ) const {

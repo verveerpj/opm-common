@@ -174,10 +174,9 @@ bool Opm::WellMatcher::hasWell(const std::string& pattern) const
 
     if (patt.find_first_of("*?") != std::string::npos) {
         // Well name template.
-        return std::any_of(this->m_well_order->begin(),
-                           this->m_well_order->end(),
-                           [&patt](const auto& wname)
-                           { return shmatch(patt, wname); });
+        return std::ranges::any_of(*this->m_well_order,
+                                  [&patt](const auto& wname)
+                                  { return shmatch(patt, wname); });
     }
 
     // Regular well name.

@@ -1442,12 +1442,10 @@ void connectionKeyword(const DeckKeyword&           keyword,
             "SPR"  , "SPRD" , "SPRDH", "SPRDF", "SPRDA",
         };
 
-        return std::any_of(kw_whitelist.begin(), kw_whitelist.end(),
-            [&kw](const char* known)
-        {
-            return kw == known;
-        })
-        || is_in_set({ "STFR", "STFC" }, kw.substr(0, 4));
+        return std::ranges::any_of(kw_whitelist,
+                                   [&kw](const char* known)
+                                   { return kw == known; })
+            || is_in_set({ "STFR", "STFC" }, kw.substr(0, 4));
     }
 
     int maxNumWellSegments(const Well& well)
@@ -2202,9 +2200,9 @@ SummaryConfig::registerRequisiteUDQorActionSummaryKeys(const std::vector<std::st
         const auto excludeFieldFromGroupKw = false;
 
         const auto node_names =
-            std::any_of(extraKeys.begin(), extraKeys.end(), &is_node_keyword)
-            ? collect_node_names(sched)
-            : std::vector<std::string>{};
+            std::ranges::any_of(extraKeys, &is_node_keyword)
+                ? collect_node_names(sched)
+                : std::vector<std::string>{};
 
         const auto analyticAquifers = analyticAquiferIDs(es.aquifer());
         const auto numericAquifers = numericAquiferIDs(es.aquifer());
@@ -2272,11 +2270,9 @@ const SummaryConfigNode& SummaryConfig::operator[](std::size_t index) const
 
 bool SummaryConfig::match(const std::string& keywordPattern) const
 {
-    return std::any_of(this->short_keywords.begin(), this->short_keywords.end(),
-                        [&keywordPattern](const auto& keyword)
-                        {
-                            return shmatch(keywordPattern, keyword);
-                        });
+    return std::ranges::any_of(this->short_keywords,
+                               [&keywordPattern](const auto& keyword)
+                               { return shmatch(keywordPattern, keyword); });
 }
 
 SummaryConfig::keyword_list
@@ -2346,9 +2342,9 @@ bool SummaryConfig::require3DField(const std::string& keyword) const
         return false;
     }
 
-    return std::any_of(iter->second.begin(), iter->second.end(),
-                       [this](const std::string& smryKw)
-                       { return this->match(smryKw); });
+    return std::ranges::any_of(iter->second,
+                               [this](const std::string& smryKw)
+                               { return this->match(smryKw); });
 }
 
 std::set<std::string> SummaryConfig::fip_regions() const

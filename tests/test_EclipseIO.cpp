@@ -76,11 +76,9 @@ namespace {
 bool keywordExists(const std::vector<EclIO::EclFile::EclEntry>& knownVec,
                    const std::string&                           arrayname)
 {
-    return std::any_of(knownVec.begin(), knownVec.end(),
-        [&arrayname](const EclIO::EclFile::EclEntry& entry) -> bool
-    {
-        return std::get<0>(entry) == arrayname;
-    });
+    return std::ranges::any_of(knownVec,
+                               [&arrayname](const EclIO::EclFile::EclEntry& entry) -> bool
+                               { return std::get<0>(entry) == arrayname; });
 }
 
 template <typename T>

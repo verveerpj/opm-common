@@ -305,11 +305,9 @@ UDQSet UDQSet::regions(const std::string&                  name,
 
 bool UDQSet::has(const std::string& name) const
 {
-    return std::any_of(this->values.begin(), this->values.end(),
-                       [&name](const UDQScalar& value)
-                       {
-                           return value.wgname() == name;
-                       });
+    return std::ranges::any_of(this->values,
+                               [&name](const UDQScalar& value)
+                               { return value.wgname() == name; });
 }
 
 std::size_t UDQSet::size() const

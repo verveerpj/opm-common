@@ -131,10 +131,9 @@ bool GroupOrder::has(const std::string& gname) const
 
 bool GroupOrder::anyGroupMatches(const std::string& pattern) const
 {
-    return std::any_of(this->name_list_.begin(),
-                       this->name_list_.end(),
-                       [&pattern](const auto& gname)
-                       { return shmatch(pattern, gname); });
+    return std::ranges::any_of(this->name_list_,
+                               [&pattern](const auto& gname)
+                               { return shmatch(pattern, gname); });
 }
 
 std::vector<std::string> GroupOrder::names(const std::string& pattern) const

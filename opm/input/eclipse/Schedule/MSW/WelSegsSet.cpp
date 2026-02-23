@@ -46,9 +46,12 @@ WelSegsSet::difference(const std::set<std::string>& compsegs,
 
     // Ignore wells without connections
     const auto empty_conn = [&wells](const Entry &x) {
-        return std::any_of(wells.begin(), wells.end(),
-                           [wname = x.first](const Well& well)
-                           { return (well.name() == wname) && well.getConnections().empty(); });
+        return std::ranges::any_of(wells,
+                                   [wname = x.first](const Well& well)
+                                   {
+                                       return (well.name() == wname)
+                                            && well.getConnections().empty();
+                                   });
     };
 
     difference.erase(std::remove_if(difference.begin(),

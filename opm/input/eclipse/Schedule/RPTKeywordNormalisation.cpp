@@ -67,7 +67,7 @@ namespace {
     classifyRptKeywordSpecification(const std::vector<std::string>& deckItems)
     {
         return {
-            std::any_of(deckItems.begin(), deckItems.end(), isInteger),
+            std::ranges::any_of(deckItems, isInteger),
             ! std::all_of(deckItems.begin(), deckItems.end(), isInteger)
         };
     }

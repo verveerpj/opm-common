@@ -124,11 +124,9 @@ namespace {
             return false;
 
         if (sep_pos == std::string::npos) {
-            return std::any_of(totals.begin(), totals.end(),
-                               [&key](const auto& total)
-                               {
-                                   return key.compare(1, total.size(), total) == 0;
-                               });
+            return std::ranges::any_of(totals,
+                                       [&key](const auto& total)
+                                       { return key.compare(1, total.size(), total) == 0; });
         } else
             return is_total(key.substr(0,sep_pos));
     }

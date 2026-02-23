@@ -667,12 +667,9 @@ namespace {
             using Value = VI::IWell::Value::Status;
 
             const auto any_flowing_conn =
-                std::any_of(std::begin(xw.connections),
-                            std::end  (xw.connections),
-                    [](const Opm::data::Connection& c)
-                {
-                    return c.rates.flowing();
-                });
+                std::ranges::any_of(xw.connections,
+                                    [](const Opm::data::Connection& c)
+                                    { return c.rates.flowing(); });
 
             iWell[Ix::item9] = any_flowing_conn
                 ? 0 : -1;
@@ -695,12 +692,9 @@ namespace {
             }
 
             const auto any_flowing_conn =
-                std::any_of(std::begin(xw.connections),
-                            std::end  (xw.connections),
-                    [](const Opm::data::Connection& c)
-                {
-                    return c.rates.flowing();
-                });
+                std::ranges::any_of(xw.connections,
+                                    [](const Opm::data::Connection& c)
+                                    { return c.rates.flowing(); });
 
             iWell[Ix::item9] = any_flowing_conn
                 ? iWell[Ix::ActWCtrl] : -1;

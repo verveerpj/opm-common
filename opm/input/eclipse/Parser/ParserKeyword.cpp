@@ -227,7 +227,7 @@ std::string KeywordSize::construct() const
             return r.hasDimension();
         };
 
-        return std::any_of( this->begin(), this->end(), have_dim );
+        return std::ranges::any_of(*this, have_dim);
     }
 
 
@@ -932,14 +932,14 @@ void set_dimensions( ParserItem& item,
         // denoting the region-level average pressures, region-level oil
         // production rate, and region-level average mass density of oil
         // respectively defined for the FIPXYZ region set.
-        return std::any_of(this->m_deckNames.begin(),
-                           this->m_deckNames.end(),
-            [&nameStr, this](const std::string& deckName)
-        {
-            return std::regex_match(nameStr, std::regex { deckName })
-                || (this->hasMatchRegexSuffix() &&
-                    std::regex_match(nameStr, std::regex { deckName + m_matchRegexSuffix }));
-        });
+        return std::ranges::any_of(this->m_deckNames,
+                                   [&nameStr, this](const std::string& deckName)
+                                   {
+                                       return std::regex_match(nameStr, std::regex { deckName })
+                                          || (this->hasMatchRegexSuffix() &&
+                                              std::regex_match(nameStr,
+                                                               std::regex{deckName + m_matchRegexSuffix}));
+                                   });
     }
 
     std::string ParserKeyword::createDeclaration(const std::string& indent) const {

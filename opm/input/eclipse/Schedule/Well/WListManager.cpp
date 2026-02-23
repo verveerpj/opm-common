@@ -56,12 +56,12 @@ namespace Opm {
 
     bool WListManager::hasWell(const std::string& pattern) const
     {
-        return std::any_of(this->wlists.begin(), this->wlists.end(),
-                           [patt = pattern.substr(1)](const auto& wlist)
-                           {
-                               return shmatch(patt, wlist.first.substr(1))
-                                   && !wlist.second.empty();
-                           });
+        return std::ranges::any_of(this->wlists,
+                                   [patt = pattern.substr(1)](const auto& wlist)
+                                   {
+                                       return shmatch(patt, wlist.first.substr(1))
+                                           && !wlist.second.empty();
+                                   });
     }
 
     bool WListManager::hasList(const std::string& name) const
