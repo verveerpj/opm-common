@@ -335,7 +335,7 @@ inline std::string fast_clean( const std::string& str ) {
         if ( getline( input, line ) ) {
             line = trim( strip_comments(line));
 
-            std::copy( line.begin(), line.end(), dsti );
+            std::ranges::copy(line, dsti);
             dsti += std::distance( line.begin(), line.end() );
             *dsti++ = '\n';
         } else
@@ -389,7 +389,7 @@ inline std::string clean( const std::vector<std::pair<std::string, std::string>>
                     std::string end_string = code_pair.second;
                     auto end_pos = input.find(end_string);
                     if (end_pos == std::string::npos) {
-                        std::copy(input.begin(), input.end(), dsti);
+                        std::ranges::copy(input, dsti);
                         dsti += std::distance( input.begin(), input.end() );
                         input = {};
                         break;
@@ -407,7 +407,7 @@ inline std::string clean( const std::vector<std::pair<std::string, std::string>>
             if ( getline( input, line ) ) {
                 line = trim( strip_comments(line));
 
-                std::copy( line.begin(), line.end(), dsti );
+                std::ranges::copy(line, dsti);
                 dsti += std::distance( line.begin(), line.end() );
                 *dsti++ = '\n';
             } else

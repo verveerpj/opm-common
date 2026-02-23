@@ -186,7 +186,7 @@ namespace Opm::Fieldprops {
                 };
             }
 
-            std::copy(src.begin(), src.end(), this->data.begin());
+            std::ranges::copy(src, this->data.begin());
             std::fill(this->value_status.begin(), this->value_status.end(),
                       value::status::valid_default);
         }
@@ -206,7 +206,7 @@ namespace Opm::Fieldprops {
                 };
             }
 
-            std::copy(src.begin(), src.end(), this->global_data->begin());
+            std::ranges::copy(src, this->global_data->begin());
             std::fill(this->global_value_status->begin(), this->global_value_status->end(),
                       value::status::valid_default);
         }

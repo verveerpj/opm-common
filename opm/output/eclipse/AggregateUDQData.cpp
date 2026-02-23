@@ -1218,7 +1218,7 @@ collectIUAP(const std::vector<int>& wgIndex,
 
     this->iUAP_.emplace(WV::NumWindows{ 1 }, WV::WindowSize{ expectNumIUAP });
 
-    std::copy(wgIndex.begin(), wgIndex.end(), (*this->iUAP_)[0].begin());
+    std::ranges::copy(wgIndex, (*this->iUAP_)[0].begin());
 }
 
 void
@@ -1238,5 +1238,5 @@ collectIGPH(const std::vector<int>& phase_vector,
 
     this->iGPH_.emplace(WV::NumWindows{ 1 }, WV::WindowSize{ expectNumIGPH });
 
-    std::copy(phase_vector.begin(), phase_vector.end(), (*this->iGPH_)[0].begin());
+    std::ranges::copy(phase_vector, (*this->iGPH_)[0].begin());
 }

@@ -139,8 +139,8 @@ public:
 
         resizeArrays_(x.size());
         if (x.size() > 0) {
-            std::copy(x.begin(), x.end(), xValues_.begin());
-            std::copy(y.begin(), y.end(), yValues_.begin());
+            std::ranges::copy(x, xValues_.begin());
+            std::ranges::copy(y, yValues_.begin());
 
             if (sortInputs)
                 sortInput_();
