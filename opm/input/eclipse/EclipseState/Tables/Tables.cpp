@@ -2695,10 +2695,12 @@ namespace
 
     bool all_defaulted(const DeckRecord& record)
     {
-        return std::all_of(record.begin(), record.end(), [](const DeckItem& item) {
-            const auto& vstat = item.getValueStatus();
-            return std::all_of(vstat.begin(), vstat.end(), &value::defaulted);
-        });
+        return std::ranges::all_of(record,
+                                   [](const DeckItem& item)
+                                   {
+                                       const auto& vstat = item.getValueStatus();
+                                       return std::ranges::all_of(vstat, &value::defaulted);
+                                   });
     }
 
 } // Anonymous namespace

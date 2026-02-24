@@ -1791,9 +1791,9 @@ std::vector<double> EclipseGrid::createDVector(const std::array<int,3>& dims, st
         std::array<double,8> X, Y, Z;
         this->getCellCorners(globalIndex, X, Y, Z);
 
-        const auto finite_coord = std::all_of(X.begin(), X.end(), is_finite)
-            && std::all_of(Y.begin(), Y.end(), is_finite)
-            && std::all_of(Z.begin(), Z.end(), is_finite);
+        const auto finite_coord = std::ranges::all_of(X, is_finite)
+                               && std::ranges::all_of(Y, is_finite)
+                               && std::ranges::all_of(Z, is_finite);
 
         if (! finite_coord) {
             return false;

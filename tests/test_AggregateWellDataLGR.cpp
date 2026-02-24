@@ -3646,13 +3646,13 @@ BOOST_AUTO_TEST_CASE (Declared_GroupDataLGR)
         // XGRP (LGR for LGR2)
         {
             const auto& xGrp = group_aggregator_lgr2.getXGroup();
-            bool all_equal = std::all_of(xGrp.begin(), xGrp.end(), [](int x) { return x == 0; });
+            bool all_equal = std::ranges::all_of(xGrp, [](int x) { return x == 0; });
             BOOST_CHECK_EQUAL(all_equal, true);
         }
         // XGRP (LGR for LGR2)
         {
             const auto& xGrp = group_aggregator_lgr3.getXGroup();
-            bool all_equal = std::all_of(xGrp.begin(), xGrp.end(), [](int x) { return x == 0; });
+            bool all_equal = std::ranges::all_of(xGrp, [](int x) { return x == 0; });
             BOOST_CHECK_EQUAL(all_equal, true);
         }
 
