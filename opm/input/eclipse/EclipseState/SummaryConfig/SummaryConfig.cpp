@@ -2225,9 +2225,8 @@ SummaryConfig::registerRequisiteUDQorActionSummaryKeys(const std::vector<std::st
     std::ranges::sort(candidateSummaryNodes);
 
     summaryNodes.reserve(candidateSummaryNodes.size());
-    std::set_difference(candidateSummaryNodes.begin(), candidateSummaryNodes.end(),
-                        this->m_keywords.begin(), this->m_keywords.end(),
-                        std::back_inserter(summaryNodes));
+    std::ranges::set_difference(candidateSummaryNodes, this->m_keywords,
+                                std::back_inserter(summaryNodes));
 
     if (summaryNodes.empty()) {
         // No new summary keywords encountered.

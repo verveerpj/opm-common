@@ -1674,9 +1674,8 @@ bool parseState( ParserState& parserState, const Parser& parser, ErrorGuard& err
                 sections.begin(), sections.end()
             };
 
-            std::set_difference(all_sections.begin(), all_sections.end(),
-                                read_sections.begin(), read_sections.end(),
-                                std::inserter(ignore_sections, ignore_sections.end()));
+            std::ranges::set_difference(all_sections, read_sections,
+                                        std::inserter(ignore_sections, ignore_sections.end()));
         }
 
         /*
