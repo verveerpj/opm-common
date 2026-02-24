@@ -1033,7 +1033,7 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
             && (this->m_ordering == rhs.m_ordering)
             && (this->coord == rhs.coord)
             && (this->md == rhs.md)
-            && std::equal( this->begin(), this->end(), rhs.begin());
+            && std::ranges::equal(*this, rhs);
     }
 
     bool WellConnections::operator!=(const WellConnections& rhs) const
