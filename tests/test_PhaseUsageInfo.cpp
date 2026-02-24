@@ -23,7 +23,7 @@
  */
 
 #define BOOST_TEST_MODULE PhaseUsageInfoTest
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include "config.h"
 
 #if HAVE_ECL_INPUT
