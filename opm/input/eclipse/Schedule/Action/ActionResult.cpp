@@ -272,10 +272,9 @@ void SortedVectorSet<T>::makeIntersection(const SortedVectorSet& rhs, Compare&& 
     auto i = std::vector<T>{};
     i.reserve(std::min(this->elems_.size(), rhs.elems_.size()));
 
-    std::set_intersection(this->elems_.begin(), this->elems_.end(),
-                          rhs  .elems_.begin(), rhs  .elems_.end(),
-                          std::back_inserter(i),
-                          std::forward<Compare>(cmp));
+    std::ranges::set_intersection(this->elems_,rhs.elems_,
+                                  std::back_inserter(i),
+                                  std::forward<Compare>(cmp));
 
     this->elems_.swap(i);
 }
