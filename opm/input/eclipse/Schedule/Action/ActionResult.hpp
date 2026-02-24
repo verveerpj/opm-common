@@ -151,7 +151,7 @@ public:
         /// \return Whether or not \p elem exists in the value range.
         bool hasElementSorted(const T& elem) const
         {
-            return std::binary_search(this->begin(), this->end(), elem);
+            return std::ranges::binary_search(*this, elem);
         }
 
         /// Element existence predicate for unsorted sequences

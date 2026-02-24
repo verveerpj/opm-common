@@ -262,8 +262,7 @@ template <typename T>
 template <typename Compare>
 bool SortedVectorSet<T>::hasElement(const T& elem, Compare&& cmp) const
 {
-    return std::binary_search(this->elems_.begin(), this->elems_.end(),
-                              elem, std::forward<Compare>(cmp));
+    return std::ranges::binary_search(this->elems_, elem, std::forward<Compare>(cmp));
 }
 
 template <typename T>

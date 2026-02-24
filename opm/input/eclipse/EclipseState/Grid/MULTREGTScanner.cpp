@@ -546,8 +546,6 @@ namespace Opm {
 
     bool MULTREGTScanner::isAquCell(const std::size_t globalCellIdx) const
     {
-        return std::binary_search(this->aquifer_cells.begin(),
-                                  this->aquifer_cells.end(),
-                                  globalCellIdx);
+        return std::ranges::binary_search(aquifer_cells, globalCellIdx);
     }
 } // namespace Opm
