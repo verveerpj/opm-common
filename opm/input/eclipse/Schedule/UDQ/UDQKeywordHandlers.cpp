@@ -213,7 +213,7 @@ void handleUDT(HandlerContext& handlerContext)
                             handlerContext.keyword.location());
     }
 
-    if (auto it = std::adjacent_find(x_vals.begin(), x_vals.end()); it != x_vals.end()) {
+    if (auto it = std::ranges::adjacent_find(x_vals); it != x_vals.end()) {
         throw OpmInputError(fmt::format("UDT: Interpolation points need to be unique: "
                                         "found duplicate for {}", *it),
                             handlerContext.keyword.location());
