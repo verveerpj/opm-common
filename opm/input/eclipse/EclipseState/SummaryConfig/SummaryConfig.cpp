@@ -198,7 +198,7 @@ namespace {
 
     void SummaryConfigContext::RegSet::summariseContents(const std::vector<int>& regIDs)
     {
-        const auto maxPos = std::max_element(regIDs.begin(), regIDs.end());
+        const auto maxPos = std::ranges::max_element(regIDs);
 
         this->maxID = std::max(this->maxID, *maxPos);
 
