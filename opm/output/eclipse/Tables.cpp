@@ -1842,7 +1842,7 @@ namespace { namespace SatFunc {
             }
 
             // Join derived KrO functions on common saturation values for
-            // oil.  Heavy lifting by std::set_union() to avoid outputting
+            // oil.  Heavy lifting by std::ranges::set_union() to avoid outputting
             // common oil saturation values more than once.  Relies on input
             // tables having sorted phase saturation values (required by ECL
             // format).
@@ -1856,15 +1856,13 @@ namespace { namespace SatFunc {
 
                 ret.reserve(t0.size() + t1.size());
 
-                std::set_union(std::begin(t0), std::end(t0),
-                               std::begin(t1), std::end(t1),
-                               std::back_inserter(ret),
-                    [&t,tolerance](const TableElement& e1, const TableElement& e2)
-                {
-                    const double val1 = t[e1.function].So(e1.index);
-                    const double val2 = t[e2.function].So(e2.index);
-                    return ( (val1 + tolerance) < val2);
-                });
+                std::ranges::set_union(t0, t1, std::back_inserter(ret),
+                                       [&t,tolerance](const TableElement& e1, const TableElement& e2)
+                                       {
+                                           const double val1 = t[e1.function].So(e1.index);
+                                           const double val2 = t[e2.function].So(e2.index);
+                                           return ( (val1 + tolerance) < val2);
+                                       });
 
                 return ret;
             }

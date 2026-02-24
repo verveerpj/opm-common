@@ -287,10 +287,8 @@ void SortedVectorSet<T>::makeUnion(const SortedVectorSet& rhs, Compare&& cmp)
     auto u = std::vector<T>{};
     u.reserve(this->elems_.size() + rhs.elems_.size());
 
-    std::set_union(this->elems_.begin(), this->elems_.end(),
-                   rhs  .elems_.begin(), rhs  .elems_.end(),
-                   std::back_inserter(u),
-                   std::forward<Compare>(cmp));
+    std::ranges::set_union(this->elems_, rhs.elems_,
+                           std::back_inserter(u), std::forward<Compare>(cmp));
 
     this->elems_.swap(u);
 }

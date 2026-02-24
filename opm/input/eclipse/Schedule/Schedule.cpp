@@ -610,9 +610,8 @@ void check_compsegs_and_comptraj_consistency(const Opm::WelSegsSet& welsegs,
                                              const std::vector<::Opm::Well>& wells)
 {
     std::set<std::string> compsegs_comptraj_union = compsegs;
-    std::set_union(compsegs.begin(), compsegs.end(),
-                   comptraj.begin(), comptraj.end(),
-                   std::inserter(compsegs_comptraj_union, compsegs_comptraj_union.begin()));
+    std::ranges::set_union(compsegs, comptraj,
+                           std::inserter(compsegs_comptraj_union, compsegs_comptraj_union.begin()));
     const auto difference = welsegs.difference(compsegs_comptraj_union, wells);
     report_welsegs_error(
         difference, "Missing COMPSEGS or COMPTRAJ keyword for the following multisegment {}."
