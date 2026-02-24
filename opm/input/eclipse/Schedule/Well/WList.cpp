@@ -53,8 +53,7 @@ void WList::add(const std::string& well)
 
 void WList::del(const std::string& well)
 {
-    auto end_keep = std::remove(this->well_list.begin(), this->well_list.end(), well);
-    this->well_list.erase(end_keep, this->well_list.end());
+    std::erase(this->well_list, well);
 }
 
 const std::vector<std::string>& WList::wells() const

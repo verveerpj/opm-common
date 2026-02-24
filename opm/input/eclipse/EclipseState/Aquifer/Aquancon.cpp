@@ -243,13 +243,9 @@ namespace Opm {
         };
 
         for (auto& conns : this->cells) {
-            auto end = std::remove_if(conns.second.begin(), conns.second.end(),
-                [&removed](const AquancCell& cell) -> bool
-            {
-                return removed.find(cell.global_index) != removed.end();
-            });
-
-            conns.second.erase(end, conns.second.end());
+            std::erase_if(conns.second,
+                          [&removed](const AquancCell& cell) -> bool
+                          { return removed.find(cell.global_index) != removed.end(); });
         }
     }
 
