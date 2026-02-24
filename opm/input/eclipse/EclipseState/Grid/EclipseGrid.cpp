@@ -1174,7 +1174,7 @@ EclipseGrid::EclipseGrid(const Deck& deck, const int * actnum)
             {
                 std::vector<double> ri(this->getNX() + 1);
                 std::vector<double> tj(this->getNY() + 1);
-                double z1 = *std::min_element( zcorn.begin() , zcorn.end());
+                double z1 = *std::ranges::min_element(zcorn);
                 double z2 = *std::max_element( zcorn.begin() , zcorn.end());
                 ri[0] = deck.get<ParserKeywords::INRAD>().back().getRecord(0).getItem(0).getSIDouble( 0 );
                 for (std::size_t i = 1; i <= this->getNX(); i++)

@@ -80,9 +80,9 @@ std::vector<int> isInsideElement(const std::vector<T>& tpX, const std::vector<T>
     T pcX, pcY, pcZ, element_volume, test_element_volume;
     bool flag;
     for (std::size_t outerIndex = 0; outerIndex < X.size(); outerIndex++) {
-        minX = *std::min_element(X[outerIndex].begin(), X[outerIndex].end());
-        minY = *std::min_element(Y[outerIndex].begin(), Y[outerIndex].end());
-        minZ = *std::min_element(Z[outerIndex].begin(), Z[outerIndex].end());
+        minX = *std::ranges::min_element(X[outerIndex]);
+        minY = *std::ranges::min_element(Y[outerIndex]);
+        minZ = *std::ranges::min_element(Z[outerIndex]);
         maxX = *std::max_element(X[outerIndex].begin(), X[outerIndex].end());
         maxY = *std::max_element(Y[outerIndex].begin(), Y[outerIndex].end());
         maxZ = *std::max_element(Z[outerIndex].begin(), Z[outerIndex].end());
