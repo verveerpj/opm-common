@@ -770,10 +770,9 @@ The cell ({},{},{}) in well {} is not active and the connection will be ignored)
                                   const KeywordLocation& location,
                                   WellTrajInfo&          wellTraj)
     {
-        if (this->coord[0].size() == 0) return;  // No path.
-
         using Kw = ParserKeywords::COMPTRAJ;
 
+        const auto branch = record.getItem<Kw::BRANCH_NUMBER>().get<int>(0);
         const auto& perf_top = record.getItem<Kw::PERF_TOP>();
         const auto& perf_bot = record.getItem<Kw::PERF_BOT>();
 
@@ -809,23 +808,28 @@ The cell ({},{},{}) in well {} is not active and the connection will be ignored)
         std::vector<external::cvf::Vec3d> points;
         std::vector<double> measured_depths;
 
+        const auto& branch_coord = this->coord.at(branch);
+        const auto& branch_md = this->md.at(branch);
+
         // Calulate the x,y,z coordinates of the begin and end of a perforation
         const auto m_top = perf_top.getSIDouble(0);
         const auto m_bot = perf_bot.getSIDouble(0);
         external::cvf::Vec3d p_top, p_bot;
         for (std::size_t i = 0; i < 3 ; ++i) {
-            p_top[i] = linearInterpolation(this->md, this->coord[i], m_top);
-            p_bot[i] = linearInterpolation(this->md, this->coord[i], m_bot);
+            p_top[i] = linearInterpolation(branch_md, branch_coord[i], m_top);
+            p_bot[i] = linearInterpolation(branch_md, branch_coord[i], m_bot);
         }
         points.push_back(p_top);
         measured_depths.push_back(m_top);
 
-        points.reserve(this->coord[0].size());
-        measured_depths.reserve(this->coord[0].size());
-        for (std::size_t i = 0; i < coord[0].size(); ++i) {
-            if (this->md[i] > m_top and this->md[i] < m_bot) {
-                points.push_back(external::cvf::Vec3d(coord[0][i], coord[1][i], coord[2][i]));
-                measured_depths.push_back(this->md[i]);
+        points.reserve(branch_coord[0].size());
+        measured_depths.reserve(branch_coord[0].size());
+        for (std::size_t i = 0; i < branch_coord[0].size(); ++i) {
+            if (branch_md[i] > m_top and branch_md[i] < m_bot) {
+                points.push_back(external::cvf::Vec3d(branch_coord[0][i],
+                                                      branch_coord[1][i],
+                                                      branch_coord[2][i]));
+                measured_depths.push_back(branch_md[i]);
             }
         }
 
@@ -857,8 +861,8 @@ The cell ({},{},{}) in well {} is not active and the connection will be ignored)
             // trajectory data.
             //
             // If these defaults are used the headI/J are set to the first
-            // intersection.
-            if (is == 0) {
+            // intersection of the main branch.
+            if (branch == 1 && is == 0) {
                 if (this->headI < 0) { this->headI = ijk[0]; }
                 if (this->headJ < 0) { this->headJ = ijk[1]; }
             }
@@ -994,6 +998,7 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
     {
         using Kw = ParserKeywords::WELTRAJ;
 
+        const auto branch = record.getItem<Kw::BRANCH_NUMBER>().get<int>(0);
         double x = record.getItem<Kw::X>().getSIDouble(0);
         double y = record.getItem<Kw::Y>().getSIDouble(0);
 
@@ -1003,11 +1008,11 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
             mapaxes->inv_transform(x, y);
         }
 
-        this->coord[0].push_back(x);
-        this->coord[1].push_back(y);
-        this->coord[2].push_back(record.getItem<Kw::TVD>().getSIDouble(0));
+        this->coord[branch][0].push_back(x);
+        this->coord[branch][1].push_back(y);
+        this->coord[branch][2].push_back(record.getItem<Kw::TVD>().getSIDouble(0));
 
-        this->md.push_back(record.getItem<Kw::MD>().getSIDouble(0));
+        this->md[branch].push_back(record.getItem<Kw::MD>().getSIDouble(0));
     }
 
     void WellConnections::applyDFactorCorrelation(const ScheduleGrid& grid,
@@ -1221,9 +1226,14 @@ CF and Kh items for well {} must both be specified or both defaulted/negative)",
         return this->headJ;
     }
 
-    const std::vector<double>& WellConnections::getMD() const
+    const std::map<int, std::vector<double>>& WellConnections::getMD() const
     {
         return this->md;
+    }
+
+    const std::map<int, std::array<std::vector<double>, 3>>& WellConnections::getCoord() const
+    {
+        return this->coord;
     }
 
     std::optional<int>
