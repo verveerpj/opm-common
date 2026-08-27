@@ -66,7 +66,7 @@ namespace {
                double center_depth_in,
                std::optional<double> thermal_length_in,
                int segment_number_in,
-               std::size_t seqIndex_in);
+               std::optional<std::size_t> seqIndex_in);
 
         int m_i;
         int m_j;
@@ -89,7 +89,10 @@ namespace {
         std::optional<double> m_thermal_length;
 
         int segment_number;
-        std::size_t m_seqIndex;
+        // Position of the COMPSEGS record within its keyword.  Empty for
+        // records derived from a trajectory, which carry no ordering of their
+        // own; the connection keeps the order it was created in instead.
+        std::optional<std::size_t> m_seqIndex;
 
         void calculateCenterDepthWithSegments(const Opm::WellSegments& segment_set);
     };
@@ -102,7 +105,7 @@ namespace {
                    const double center_depth_in,
                    std::optional<double> thermal_length_in,
                    const int segment_number_in,
-                   const std::size_t seqIndex_in)
+                   const std::optional<std::size_t> seqIndex_in)
         : m_i              { i_in }
         , m_j              { j_in }
         , m_k              { k_in }
@@ -450,8 +453,6 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
             const auto thermal_length = std::optional<double>{};
             const auto segment_number = 0;
 
-            const auto seqIndex = compsegs.size();
-
             compsegs.emplace_back(trajectory_point.ijk[0],
                                   trajectory_point.ijk[1],
                                   trajectory_point.ijk[2],
@@ -460,7 +461,7 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
                                   direction,
                                   trajectory_point.centerTVD,
                                   thermal_length,
-                                  segment_number, seqIndex);
+                                  segment_number, std::nullopt);
         }
 
         processCOMPSEGS__(well_name, segments, compsegs);
@@ -586,7 +587,8 @@ connection does not exist, likely having been ignored due to zero permeability
                 connection.updateSegment(compseg.segment_number,
                                          cdepth,
                                          thermal_length,
-                                         compseg.m_seqIndex,
+                                         compseg.m_seqIndex
+                                             .value_or(connection.sort_value()),
                                          std::make_pair(compseg.m_distance_start,
                                                         compseg.m_distance_end));
             }
