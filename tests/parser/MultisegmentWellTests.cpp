@@ -139,7 +139,7 @@ WSEGAICD
     const Opm::DeckKeyword welsegs = deck["WELSEGS"].back();
     Opm::WellSegments segment_set{};
     const Opm::UnitSystem unit_system {}; // Metric by default
-    segment_set.loadWELSEGS(welsegs, unit_system);
+    segment_set.loadWELSEGS(welsegs, {}, {}, unit_system);
 
     BOOST_CHECK_EQUAL(7U, segment_set.size());
 
@@ -317,7 +317,7 @@ WSEGSICD
     const Opm::DeckKeyword welsegs = deck["WELSEGS"].back();
     Opm::WellSegments segment_set{};
     const Opm::UnitSystem unit_system {}; // Metric by default
-    segment_set.loadWELSEGS(welsegs, unit_system);
+    segment_set.loadWELSEGS(welsegs, {}, {}, unit_system);
 
     BOOST_CHECK_EQUAL(7U, segment_set.size());
 
@@ -905,7 +905,7 @@ BOOST_AUTO_TEST_CASE(WrongDistanceCOMPSEGS)
     const Opm::DeckKeyword welsegs = deck["WELSEGS"].back();
     Opm::WellSegments segment_set{};
     const Opm::UnitSystem unit_system {}; // Metric by default
-    segment_set.loadWELSEGS(welsegs, unit_system);
+    segment_set.loadWELSEGS(welsegs, {}, {}, unit_system);
 
     BOOST_CHECK_EQUAL(6U, segment_set.size());
 
@@ -989,7 +989,7 @@ BOOST_AUTO_TEST_CASE(NegativeDepthCOMPSEGS)
     const Opm::DeckKeyword welsegs = deck["WELSEGS"].back();
     Opm::WellSegments segment_set{};
     const Opm::UnitSystem unit_system {}; // Metric by default
-    segment_set.loadWELSEGS(welsegs, unit_system);
+    segment_set.loadWELSEGS(welsegs, {}, {}, unit_system);
 
     BOOST_CHECK_EQUAL(6U, segment_set.size());
 
@@ -1078,7 +1078,7 @@ BOOST_AUTO_TEST_CASE(testwsegvalv)
     const Opm::DeckKeyword welsegs = deck["WELSEGS"].back();
     Opm::WellSegments segment_set{};
     const Opm::UnitSystem unit_system {}; // Metric by default
-    segment_set.loadWELSEGS(welsegs, unit_system);
+    segment_set.loadWELSEGS(welsegs, {}, {}, unit_system);
 
     BOOST_CHECK_EQUAL(8U, segment_set.size());
 
