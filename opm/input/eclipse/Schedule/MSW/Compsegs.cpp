@@ -66,7 +66,7 @@ namespace {
                double center_depth_in,
                std::optional<double> thermal_length_in,
                int segment_number_in,
-               std::optional<std::size_t> seqIndex_in);
+               std::optional<std::size_t> sort_value_in);
 
         int m_i;
         int m_j;
@@ -89,10 +89,14 @@ namespace {
         std::optional<double> m_thermal_length;
 
         int segment_number;
-        // Position of the COMPSEGS record within its keyword.  Empty for
-        // records derived from a trajectory, which carry no ordering of their
-        // own; the connection keeps the order it was created in instead.
-        std::optional<std::size_t> m_seqIndex;
+
+        // The Connection::sort_value() this record assigns.  Set from the
+        // COMPSEGS keyword, which lists the connections and thereby orders
+        // them.  Empty for a record derived from a trajectory: those
+        // connections are numbered as COMPTRAJ creates them, across all of the
+        // well's records, and counting records instead would leave two
+        // connections sharing a number whenever two branches share a cell.
+        std::optional<std::size_t> m_sort_value;
 
         void calculateCenterDepthWithSegments(const Opm::WellSegments& segment_set);
     };
@@ -105,7 +109,7 @@ namespace {
                    const double center_depth_in,
                    std::optional<double> thermal_length_in,
                    const int segment_number_in,
-                   const std::optional<std::size_t> seqIndex_in)
+                   const std::optional<std::size_t> sort_value_in)
         : m_i              { i_in }
         , m_j              { j_in }
         , m_k              { k_in }
@@ -116,7 +120,7 @@ namespace {
         , center_depth     { center_depth_in }
         , m_thermal_length { thermal_length_in }
         , segment_number   { segment_number_in }
-        , m_seqIndex       { seqIndex_in }
+        , m_sort_value     { sort_value_in }
     {}
 
     void Record::calculateCenterDepthWithSegments(const Opm::WellSegments& segment_set)
@@ -406,7 +410,7 @@ The use of negative center depth in item 9 is not supported. Well: {})", well_na
                         ? std::optional<double>{ record.getItem<Kw::THERMAL_LENGTH>().getSIDouble(0) }
                         : std::nullopt;
 
-                    const std::size_t seqIndex = compsegs.size();
+                    const std::size_t sort_value = compsegs.size();
                     compsegs.emplace_back(I, J, K,
                                           branch,
                                           distance_start, distance_end,
@@ -414,7 +418,7 @@ The use of negative center depth in item 9 is not supported. Well: {})", well_na
                                           center_depth,
                                           thermal_length,
                                           segment_number,
-                                          seqIndex);
+                                          sort_value);
                 }
             }
             else {
@@ -453,6 +457,10 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
             const auto thermal_length = std::optional<double>{};
             const auto segment_number = 0;
 
+            // COMPTRAJ numbers the connections as it creates them, so this
+            // record has no order of its own to impose.
+            const auto sort_value = std::optional<std::size_t>{};
+
             compsegs.emplace_back(trajectory_point.ijk[0],
                                   trajectory_point.ijk[1],
                                   trajectory_point.ijk[2],
@@ -461,7 +469,7 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
                                   direction,
                                   trajectory_point.centerTVD,
                                   thermal_length,
-                                  segment_number, std::nullopt);
+                                  segment_number, sort_value);
         }
 
         processCOMPSEGS__(well_name, segments, compsegs);
@@ -584,10 +592,12 @@ connection does not exist, likely having been ignored due to zero permeability
                 const double thermal_length = compseg.m_thermal_length
                     .value_or(penetrationThickness(cell.dimensions, connection.dir()));
 
+                // Only COMPSEGS gives a connection order; a trajectory record
+                // leaves the connection the number COMPTRAJ gave it.
                 connection.updateSegment(compseg.segment_number,
                                          cdepth,
                                          thermal_length,
-                                         compseg.m_seqIndex
+                                         compseg.m_sort_value
                                              .value_or(connection.sort_value()),
                                          std::make_pair(compseg.m_distance_start,
                                                         compseg.m_distance_end));
