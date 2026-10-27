@@ -308,8 +308,8 @@ void initWellPathGeometry(external::cvf::ref<external::RigWellPath>& wellPathGeo
     std::vector<external::cvf::Vec3d> points;
     std::vector<double> measured_depths;
 
-    points.reserve(coords[0].size() + 2);
-    measured_depths.reserve(coords[0].size() + 2);
+    points.reserve(coords[0].size());
+    measured_depths.reserve(coords[0].size());
 
     // Calulate the x,y,z coordinates of the begin and end of the interval
     external::cvf::Vec3d p_top, p_bot;
