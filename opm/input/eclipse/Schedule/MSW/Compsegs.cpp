@@ -435,7 +435,8 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
     std::vector<Record>
     compsegsFromTrajectory(std::string_view                                        well_name,
                            const std::vector<Opm::Compsegs::TrajectoryConnection>& trajectory_connections,
-                           const Opm::WellSegments&                                segments)
+                           const Opm::WellSegments&                                segments,
+                           const std::size_t                                       sequence_index_offset)
     {
         auto compsegs = std::vector<Record> {};
         compsegs.reserve(trajectory_connections.size());
@@ -448,7 +449,7 @@ Well: {}, connection: ({},{},{}))", well_name, I+1, J+1 , K+1);
             const auto thermal_length = std::optional<double>{};
             const auto segment_number = 0;
 
-            const auto seqIndex = compsegs.size();
+            const auto seqIndex = sequence_index_offset + compsegs.size();
 
             compsegs.emplace_back(trajectory_point.ijk[0],
                                   trajectory_point.ijk[1],
@@ -650,6 +651,7 @@ namespace Opm::Compsegs {
     WellConnections
     getConnectionsToSegmentsFromTrajectory(std::string_view                         well_name,
                                            const std::vector<TrajectoryConnection>& trajectory_connections,
+                                           const std::size_t                         sequence_index_offset,
                                            const WellSegments&                      segments,
                                            const WellConnections&                   input_connections,
                                            const ScheduleGrid&                      grid,
@@ -658,7 +660,8 @@ namespace Opm::Compsegs {
                                            ErrorGuard&                              errors)
     {
         const auto compsegs_vector =
-            compsegsFromTrajectory(well_name, trajectory_connections, segments);
+            compsegsFromTrajectory(well_name, trajectory_connections, segments,
+                                   sequence_index_offset);
 
         return process_compsegs_records(well_name, compsegs_vector, input_connections,
                                         grid, location, parseContext, errors);

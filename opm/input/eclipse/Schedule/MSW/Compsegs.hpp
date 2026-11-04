@@ -118,6 +118,9 @@ namespace Opm::Compsegs {
     /// for the same cell overwrite earlier ones, including their position
     /// in the connection order.
     ///
+    /// \param[in] sequence_index_offset Sequence index of the first row,
+    /// following rows processed for earlier COMPTRAJ records.
+    ///
     /// \param[in] segments All well segments defined for well \p well_name,
     /// from the WELSEGS keyword.
     ///
@@ -140,6 +143,7 @@ namespace Opm::Compsegs {
     WellConnections
     getConnectionsToSegmentsFromTrajectory(std::string_view                         well_name,
                                            const std::vector<TrajectoryConnection>& trajectory_connections,
+                                           std::size_t                              sequence_index_offset,
                                            const WellSegments&                      segments,
                                            const WellConnections&                   input_connections,
                                            const ScheduleGrid&                      grid,
