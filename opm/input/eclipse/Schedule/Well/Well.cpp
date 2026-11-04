@@ -2029,15 +2029,19 @@ void Well::updateSegments(std::shared_ptr<WellSegments> segments_arg)
 
 bool Well::handleWELSEGS(const DeckKeyword& keyword)
 {
+    const auto& well_connections = this->getConnections();
+    const auto& coords = well_connections.getCoord();
+    const auto& mds = well_connections.getMD();
+
     if (this->segments != nullptr) {
         auto new_segments = std::make_shared<WellSegments>(*this->segments);
-        new_segments->loadWELSEGS(keyword, *unit_system);
+        new_segments->loadWELSEGS(keyword, coords, mds, *unit_system);
 
         this->updateSegments(std::move(new_segments));
     }
     else {
         auto well_segments = std::make_shared<WellSegments>();
-        well_segments->loadWELSEGS(keyword, *unit_system);
+        well_segments->loadWELSEGS(keyword, coords, mds, *unit_system);
 
         this->updateSegments(std::move(well_segments));
     }
