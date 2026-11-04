@@ -2476,7 +2476,7 @@ COMPSEGS
 
     for (std::size_t i = 0; i < connections.size(); ++i) {
         const auto& actual = connections[i];
-        const auto& native = expected.getFromGlobalIndex(actual.global_index());
+        const auto& native = expected[i];
 
         BOOST_CHECK_EQUAL(actual.global_index(), native.global_index());
         BOOST_CHECK_EQUAL(actual.segment(), native.segment());
@@ -2939,6 +2939,57 @@ COMPTRAJ
 )";
 
     BOOST_CHECK_THROW(mswTrajectorySchedule(schedule), Opm::OpmInputError);
+}
+
+BOOST_AUTO_TEST_CASE(Comptraj_MSW_Connection_Sort_Values_Are_Unique)
+{
+    // The connections of an MSW well are sorted on their sort value, so two
+    // connections sharing one leaves their relative order up to the sorting
+    // algorithm.  Each COMPTRAJ record used to number its own connections
+    // from zero.
+    for (const auto& schedule : {msw_two_branch_prelude + comptraj_main_branch + comptraj_lateral,
+                                 msw_two_branch_prelude + comptraj_lateral + comptraj_main_branch})
+    {
+        const auto sched = mswTrajectorySchedule(schedule);
+        const auto& connections = sched.getWell("W1", 0).getConnections();
+
+        auto sort_values = std::set<std::size_t>{};
+        for (const auto& conn : connections) {
+            sort_values.insert(conn.sort_value());
+        }
+
+        BOOST_CHECK_EQUAL(sort_values.size(), connections.size());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(Comptraj_MSW_Connection_Order_Follows_Record_Order)
+{
+    const auto main_then_lateral = std::vector<std::string> {
+        "(3,3,1)", "(3,3,3)", "(3,3,2)", "(4,3,2)", "(5,3,2)"
+    };
+    const auto lateral_then_main = std::vector<std::string> {
+        "(4,3,2)", "(5,3,2)", "(3,3,1)", "(3,3,2)", "(3,3,3)"
+    };
+
+    for (const auto& [schedule, expected] : {
+             std::pair { msw_two_branch_prelude + comptraj_main_branch + comptraj_lateral,
+                         main_then_lateral },
+             std::pair { msw_two_branch_prelude + comptraj_lateral + comptraj_main_branch,
+                         lateral_then_main },
+         })
+    {
+        const auto sched = mswTrajectorySchedule(schedule);
+        const auto& connections = sched.getWell("W1", 0).getConnections();
+
+        auto cells = std::vector<std::string>{};
+        for (const auto& conn : connections) {
+            cells.push_back(fmt::format("({},{},{})", conn.getI() + 1, conn.getJ() + 1, conn.getK() + 1));
+        }
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(cells.begin(), cells.end(),
+                                      expected.begin(), expected.end());
+
+    }
 }
 
 BOOST_AUTO_TEST_CASE(Comptraj_MSW_Skipped_Cells_Do_Not_Break_Segment_Assignment)

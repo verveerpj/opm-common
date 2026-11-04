@@ -200,6 +200,14 @@ namespace
                 wellTraj.wellPathGeometry = new external::RigWellPath;
 
                 auto connections = std::make_shared<WellConnections>(well.getConnections());
+                auto sequence_index_offset = std::size_t{0};
+                if (well.isMultiSegment()) {
+                    for (const auto& connection : *connections) {
+                        sequence_index_offset =
+                            std::max(sequence_index_offset, connection.sort_value() + 1);
+                    }
+                }
+
                 connections->loadCOMPTRAJ(record, name, handlerContext.grid,
                                           handlerContext.keyword.location(),
                                           wellTraj);
@@ -218,6 +226,7 @@ namespace
                         Compsegs::getConnectionsToSegmentsFromTrajectory
                             (name,
                              wellTraj.trajectoryConnections,
+                             sequence_index_offset,
                              well.getSegments(),
                              *connections,
                              handlerContext.grid,
