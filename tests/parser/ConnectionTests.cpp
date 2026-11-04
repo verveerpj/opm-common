@@ -1817,7 +1817,7 @@ COMPTRAJ
 BOOST_AUTO_TEST_CASE(Comptraj_MultiSegment_Well_Requires_One_Main_Branch_Record)
 {
     const auto msw_schedule = weltraj_two_branches + R"(WELSEGS
-  'W1' 2000.0 0.0 1* INC 'HF-' /
+  'W1' 2000.0 2000.0 1* INC 'HF-' /
 /
 )";
     const auto check_unsupported = [](const std::string& schedule) {
