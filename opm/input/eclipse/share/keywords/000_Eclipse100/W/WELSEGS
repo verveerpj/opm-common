@@ -12,7 +12,8 @@
       {
         "name": "TOP_DEPTH",
         "value_type": "DOUBLE",
-        "dimension": "Length"
+        "dimension": "Length",
+        "default": 0
       },
       {
         "name": "TOP_LENGTH",

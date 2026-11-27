@@ -57,6 +57,7 @@
 #include <vector>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace {
     void handleMissingMSWSegment(std::string_view            well_name,
@@ -154,6 +155,91 @@ In {{file}} line {{line}}
 
         return point;
     }
+
+    // "segment 3" or "segments 2-4, 7", merging adjacent and overlapping ranges.
+    std::string formatSegmentRanges(std::vector<std::pair<int, int>> ranges)
+    {
+        std::ranges::sort(ranges);
+
+        auto merged = std::vector<std::pair<int, int>>{};
+        for (const auto& [first, last] : ranges) {
+            if (!merged.empty() && (first <= merged.back().second + 1)) {
+                merged.back().second = std::max(merged.back().second, last);
+            }
+            else {
+                merged.emplace_back(first, last);
+            }
+        }
+
+        auto parts = std::vector<std::string>{};
+        for (const auto& [first, last] : merged) {
+            parts.push_back((first == last) ? fmt::format("{}", first)
+                                            : fmt::format("{}-{}", first, last));
+        }
+
+        const bool single = (merged.size() == 1) && (merged.front().first == merged.front().second);
+        return fmt::format("{} {}", single ? "segment" : "segments", fmt::join(parts, ", "));
+    }
+
+    [[noreturn]] void throwDefaultedWelsegsDepth(std::string_view            item,
+                                                 std::string_view            well_name,
+                                                 const int                   first_segment,
+                                                 const int                   last_segment,
+                                                 const Opm::KeywordLocation& location)
+    {
+        throw Opm::OpmInputError {
+            fmt::format("{} is defaulted for {} in WELSEGS for well {}, but the well has "
+                        "no WELTRAJ trajectory to take segment node depths from. Give an "
+                        "explicit {}, or define the trajectory with WELTRAJ before WELSEGS.",
+                        item, formatSegmentRanges({{first_segment, last_segment}}),
+                        well_name, item),
+            location
+        };
+    }
+
+    // WELSEGS items given in the deck although the well trajectory supplies
+    // the segment node depths and positions, reported as a single warning.
+    class IgnoredWelsegsItems
+    {
+    public:
+        void add(std::string_view item, const int first_segment, const int last_segment)
+        {
+            auto pos = std::ranges::find(this->items_, item, &Item::first);
+            assert(pos != this->items_.end());
+            pos->second.emplace_back(first_segment, last_segment);
+        }
+
+        void report(std::string_view well_name, const Opm::KeywordLocation& location) const
+        {
+            auto lines = std::string{};
+            for (const auto& [item, ranges] : this->items_) {
+                if (!ranges.empty()) {
+                    lines += fmt::format("\n  {} ({})", item, formatSegmentRanges(ranges));
+                }
+            }
+
+            if (lines.empty()) {
+                return;
+            }
+
+            const auto msg_fmt = fmt::format(R"(Problem with keyword {{keyword}}
+In {{file}} line {{line}}
+Well {} takes its segment node depths and X/Y positions from its WELTRAJ trajectory.
+The following WELSEGS items are ignored:{}
+Default these items to avoid this warning.)", well_name, lines);
+
+            Opm::OpmLog::warning(Opm::OpmInputError::format(msg_fmt, location));
+        }
+
+    private:
+        using Item = std::pair<std::string_view, std::vector<std::pair<int, int>>>;
+
+        // In keyword order, header items first.
+        std::vector<Item> items_ {
+            {"TOP_DEPTH", {}}, {"TOP_X", {}}, {"TOP_Y", {}},
+            {"DEPTH", {}}, {"LENGTH_X", {}}, {"LENGTH_Y", {}},
+        };
+    };
 }
 
 namespace Opm {
@@ -345,14 +431,22 @@ namespace Opm {
         const auto nodeX_top = record1.getItem<Kw::TOP_X>().getSIDouble(0);
         const auto nodeY_top = record1.getItem<Kw::TOP_Y>().getSIDouble(0);
 
-        if (!mds.empty()) {
+        const bool use_trajectory = !mds.empty();
+        const auto& location = welsegsKeyword.location();
+        auto ignored_items = IgnoredWelsegsItems{};
+
+        if (!use_trajectory && record1.getItem<Kw::TOP_DEPTH>().defaultApplied(0)) {
+            throwDefaultedWelsegsDepth("TOP_DEPTH", wname, 1, 1, location);
+        }
+
+        if (use_trajectory) {
             const auto mainBranch = mds.find(1);
             if ((mainBranch == mds.end()) || mainBranch->second.empty()) {
                 throw OpmInputError {
                     fmt::format("Well {} has WELTRAJ trajectory data, but none "
                                 "for the main branch. Branch 1 must be defined "
                                 "before WELSEGS can position its segments.", wname),
-                    welsegsKeyword.location()
+                    location
                 };
             }
 
@@ -365,20 +459,16 @@ namespace Opm {
                                 unit_system.from_si(length, length_top), unit_system.name(length),
                                 wname, unit_system.from_si(length, mainBranch->second.front()),
                                 unit_system.name(length)),
-                    welsegsKeyword.location()
+                    location
                 };
             }
 
             // The top segment's node sits on the trajectory, just like every
             // other node, so any position given in the deck is redundant.
-            if (!(record1.getItem<Kw::TOP_X>().defaultApplied(0) &&
-                  record1.getItem<Kw::TOP_Y>().defaultApplied(0)))
-            {
-                OpmLog::warning(fmt::format(
-                    "TOP_X/TOP_Y values ({:.3e}, {:.3e}) in WELSEGS for grid-independent "
-                    "well {} are not defaulted. The values will be ignored and the top "
-                    "segment node position taken from the well trajectory instead.",
-                    nodeX_top, nodeY_top, wname));
+            for (const auto& item : {Kw::TOP_DEPTH::itemName, Kw::TOP_X::itemName, Kw::TOP_Y::itemName}) {
+                if (!record1.getItem(item).defaultApplied(0)) {
+                    ignored_items.add(item, 1, 1);
+                }
             }
         }
 
@@ -471,20 +561,16 @@ namespace Opm {
             // If the length_depth_type is INC, then the depth is the depth change of the segment from the outlet segment.
             // If the length_depth_type is ABS, then the depth is the absolute depth of last the segment node in the range.
             const double depth = record.getItem<Kw::DEPTH>().getSIDouble(0);
-            if (mds.empty()) {
-                if (record.getItem<Kw::DEPTH>().defaultApplied(0)) {
-                    throw std::logic_error {
-                        fmt::format("DEPTH is defaulted for well {}. DEPTH values may only be "
-                                    "defaulted in WELSEGS for grid-independent wells. Please "
-                                    "provide an explicit DEPTH value.", wname)
-                    };
-                }
+            if (!use_trajectory && record.getItem<Kw::DEPTH>().defaultApplied(0)) {
+                throwDefaultedWelsegsDepth("DEPTH", wname, segment1, segment2, location);
             }
-            else if (! record.getItem<Kw::DEPTH>().defaultApplied(0)) {
-                OpmLog::warning(fmt::format(
-                    "DEPTH value {:.3e} in WELSEGS for grid-independent well {} is not "
-                    "defaulted. The value will be ignored and the segment node depth "
-                    "taken from the well trajectory instead.", depth, wname));
+
+            if (use_trajectory) {
+                for (const auto& item : {Kw::DEPTH::itemName, Kw::LENGTH_X::itemName, Kw::LENGTH_Y::itemName}) {
+                    if (!record.getItem(item).defaultApplied(0)) {
+                        ignored_items.add(item, segment1, segment2);
+                    }
+                }
             }
 
             double volume = invalid_value;
@@ -503,7 +589,6 @@ namespace Opm {
             const bool too_high_roughness = input_roughness > safe_roughness;
             const double roughness = too_high_roughness ? safe_roughness : input_roughness;
             if (too_high_roughness) {
-                const auto& location = welsegsKeyword.location();
                 OpmLog::warning(fmt::format("Well {} WELSEGS segment {} to {}: Too high roughness {:.3e} is found at line {} in file {}, \n"
                                             "the value is limited to {:.3e} to avoid singularity in friction factor calculation.",
                                             wname, segment1, segment2, input_roughness, location.lineno, location.filename, roughness));
@@ -558,7 +643,9 @@ namespace Opm {
         }
 
         this->process(wname, coords, mds, unit_system, length_depth_type,
-                      depth_top, length_top, welsegsKeyword.location());
+                      depth_top, length_top, location);
+
+        ignored_items.report(wname, location);
     }
 
     const Segment& WellSegments::getFromSegmentNumber(const int segment_number) const {

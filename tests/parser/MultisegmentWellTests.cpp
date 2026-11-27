@@ -20,6 +20,8 @@
 #define BOOST_TEST_MODULE WellConnectionsTests
 #include <boost/test/unit_test.hpp>
 
+#include <opm/common/OpmLog/OpmLog.hpp>
+#include <opm/common/OpmLog/StreamLog.hpp>
 #include <opm/common/utility/OpmInputError.hpp>
 
 #include <opm/input/eclipse/EclipseState/EclipseState.hpp>
@@ -58,6 +60,7 @@
 #include <cstddef>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -2745,6 +2748,24 @@ END
             });
     }
 
+    std::string mswTrajectoryWarnings(const Opm::Deck& deck)
+    {
+        auto warnings = std::ostringstream{};
+        Opm::OpmLog::addBackend("STREAM",
+            std::make_shared<Opm::StreamLog>(warnings, Opm::Log::MessageType::Warning));
+
+        try {
+            mswTrajectorySchedule(deck);
+        }
+        catch (...) {
+            Opm::OpmLog::removeBackend("STREAM");
+            throw;
+        }
+
+        Opm::OpmLog::removeBackend("STREAM");
+        return warnings.str();
+    }
+
     // COMPSEGS reference for COMPTRAJ input.  A cell perforated by several
     // branches is listed once per branch, relying on later rows overwriting
     // earlier ones.  That is diagnosed as a multiply linked connection, so
@@ -3282,8 +3303,8 @@ WELTRAJ
   'W1'    2     450    250    2015    2215 /
 /
 WELSEGS
--- WELL TOP_DEPTH TOP_LENGTH VOL TYPE PRESSURE TOP_X TOP_Y
-  'W1'    2000      2000     1*  ABS  'HF-'    777   888 /
+-- WELL TOP_DEPTH TOP_LENGTH VOL TYPE PRESSURE FLOW TOP_X TOP_Y
+  'W1'    2000      2000     1*  ABS  'HF-'    1*   777   888 /
     2    2     1      1     2005   2005  0.15 1.0e-5 /
     3    3     1      2     2015   2015  0.15 1.0e-5 /
     4    4     1      3     2025   2025  0.15 1.0e-5 /
@@ -3318,7 +3339,7 @@ WELTRAJ
   'W1'    1     280    290    2030    2060 /
 /
 WELSEGS
-  'W1'    1900      2010     1*  {}  'HF-'    777   888 /
+  'W1'    1900      2010     1*  {}  'HF-'    1*   777   888 /
     2    2     1      1     {}   1*  0.15 1.0e-5 /
 /
 )", info_type, std::string_view{info_type} == "ABS" ? 2030 : 20);
@@ -3357,6 +3378,108 @@ WELSEGS
                         "the starting measured depth 2000 {} of its WELTRAJ "
                         "trajectory on branch 1.", length_unit, length_unit));
     }
+}
+
+BOOST_AUTO_TEST_CASE(Welsegs_Items_Ignored_For_A_Trajectory_Well_Are_Reported_Once)
+{
+    // The trajectory supplies every segment node's depth and X/Y position,
+    // so explicit values for those items are listed in a single warning for
+    // the whole keyword rather than one per record.
+    const auto schedule = R"(WELSPECS
+  'W1' 'G' 3 3 2000.0 OIL /
+/
+WELTRAJ
+  'W1'    1     250    250    2000    2000 /
+  'W1'    1     250    250    2030    2030 /
+  'W1'    2     250    250    2015    2015 /
+  'W1'    2     450    250    2015    2215 /
+/
+WELSEGS
+-- WELL TOP_DEPTH TOP_LENGTH VOL TYPE PRESSURE FLOW TOP_X TOP_Y
+  'W1'    2000      2000     1*  ABS  'HF-'    1*   1*    888 /
+-- SEG1 SEG2 BRANCH OUTLET LENGTH DEPTH DIAM ROUGH AREA VOL LENGTH_X
+    2    2     1      1     2005   2005  0.15 1.0e-5 /
+    3    4     1      2     2025   2025  0.15 1.0e-5 /
+    5    5     2      2     2040   1*    0.10 1.0e-5 /
+    6    6     2      5     2115   2015  0.10 1.0e-5 2*  75 /
+    7    7     2      6     2190   1*    0.10 1.0e-5 2*  75 /
+/
+)";
+
+    const auto deck = mswTrajectoryDeck(schedule);
+    const auto warnings = mswTrajectoryWarnings(deck);
+
+    const auto& location = deck["WELSEGS"].back().location();
+    const auto expected = fmt::format(R"(Problem with keyword WELSEGS
+In {} line {}
+Well W1 takes its segment node depths and X/Y positions from its WELTRAJ trajectory.
+The following WELSEGS items are ignored:
+  TOP_DEPTH (segment 1)
+  TOP_Y (segment 1)
+  DEPTH (segments 2-4, 6)
+  LENGTH_X (segments 6-7)
+Default these items to avoid this warning.)", location.filename, location.lineno);
+
+    BOOST_CHECK_MESSAGE(warnings.find(expected) != std::string::npos, warnings);
+
+    const auto first = warnings.find("Problem with keyword WELSEGS");
+    BOOST_CHECK_MESSAGE(warnings.find("Problem with keyword WELSEGS", first + 1) == std::string::npos,
+                        warnings);
+}
+
+BOOST_AUTO_TEST_CASE(Welsegs_Depths_May_Be_Defaulted_For_A_Trajectory_Well)
+{
+    for (const auto* info_type : {"ABS", "INC"}) {
+        BOOST_TEST_CONTEXT(info_type) {
+            const auto schedule = fmt::format(R"(WELSPECS
+  'W1' 'G' 3 3 2000.0 OIL /
+/
+WELTRAJ
+  'W1'    1     250    250    2000    2000 /
+  'W1'    1     280    290    2030    2060 /
+/
+WELSEGS
+  'W1'    1*      2010     1*  {}  'HF-' /
+    2    2     1      1     {}   1*  0.15 1.0e-5 /
+/
+)", info_type, std::string_view{info_type} == "ABS" ? 2030 : 20);
+
+            const auto deck = mswTrajectoryDeck(schedule);
+            const auto warnings = mswTrajectoryWarnings(deck);
+            BOOST_CHECK_MESSAGE(warnings.find("WELSEGS") == std::string::npos, warnings);
+
+            const auto sched = mswTrajectorySchedule(deck);
+            const auto& segments = sched.getWell("W1", 0).getSegments();
+            BOOST_CHECK_CLOSE(segments[0].depth(), 2005.0, 1.0e-8);
+            BOOST_CHECK_CLOSE(segments[1].depth(), 2015.0, 1.0e-8);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(Welsegs_Defaulted_Depths_Require_A_Trajectory)
+{
+    const auto schedule = [](std::string_view top_depth, std::string_view depth)
+    {
+        return fmt::format(R"(WELSPECS
+  'W1' 'G' 3 3 2000.0 OIL /
+/
+WELSEGS
+  'W1'    {}      2000      1*   ABS  'HF-' /
+    2    2     1      1     2005   2005  0.15 1.0e-5 /
+    3    4     1      2     2025   {}    0.15 1.0e-5 /
+/
+)", top_depth, depth);
+    };
+
+    checkMswInputError(mswTrajectoryDeck(schedule("1*", "2025")), "WELSEGS",
+        "TOP_DEPTH is defaulted for segment 1 in WELSEGS for well W1, but the well "
+        "has no WELTRAJ trajectory to take segment node depths from. Give an explicit "
+        "TOP_DEPTH, or define the trajectory with WELTRAJ before WELSEGS.");
+
+    checkMswInputError(mswTrajectoryDeck(schedule("2000", "1*")), "WELSEGS",
+        "DEPTH is defaulted for segments 3-4 in WELSEGS for well W1, but the well "
+        "has no WELTRAJ trajectory to take segment node depths from. Give an explicit "
+        "DEPTH, or define the trajectory with WELTRAJ before WELSEGS.");
 }
 
 BOOST_AUTO_TEST_CASE(Comptraj_MSW_Branch_Without_Segments_Is_Rejected)

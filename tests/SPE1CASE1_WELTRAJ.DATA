@@ -437,12 +437,13 @@ WELTRAJ
 'PROD'  1*  6500.00     7300.00     8410.00     12542.7  /
 /
 
--- The segment structure is given explicitly. Segment node depths are
--- defaulted; they are interpolated from the WELTRAJ trajectory above at
--- each segment's measured depth, so WELSEGS must follow WELTRAJ.
+-- The segment structure is given explicitly. All segment node depths,
+-- including the top node's, are defaulted; they are interpolated from the
+-- WELTRAJ trajectory above at each segment's measured depth, so WELSEGS must
+-- follow WELTRAJ.
 WELSEGS
 -- Well     Dep 1          Tlen 1         Vol 1     Len&Dep     PresDrop
-   PROD     8325.00000     8325.00000     1*        ABS         'HF-'    /
+   PROD     1*             8325.00000     1*        ABS         'HF-'    /
 -- First Seg     Last Seg     Branch No     Outlet Seg     Length          Depth Change     Diam        Rough
    2             2            1             1              8425.40121      1*               0.50000     0.0000328 /
    3             3            1             2              8687.83176      1*               0.50000     0.0000328 /
@@ -456,7 +457,7 @@ WELSEGS
 /
 WELSEGS
 -- Well     Dep 1          Tlen 1         Vol 1     Len&Dep     PresDrop
-   INJ      8325.00000     8325.00000     1*        ABS         'HF-'    /
+   INJ      1*             8325.00000     1*        ABS         'HF-'    /
 -- First Seg     Last Seg     Branch No     Outlet Seg     Length         Depth Change     Diam        Rough
    2             2            1             1              8335.00000     1*               0.50000     0.0000328 /
    3             3            1             2              8360.00000     1*               0.50000     0.0000328 /
