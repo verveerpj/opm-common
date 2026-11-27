@@ -2591,6 +2591,21 @@ TSTEP
                         "Message must name connection and segments: " << msg);
 }
 
+BOOST_AUTO_TEST_CASE(MSW_Connection_Branch_Without_Segments)
+{
+    const auto msg = mswConsistencyError(R"(
+COMPSEGS
+ 'PROD01' /
+  20 20 1  2  0.0 10.0 /
+/
+)");
+
+    BOOST_CHECK_MESSAGE(contains(msg, "Problem with keyword COMPSEGS\nIn "), msg);
+    BOOST_CHECK_MESSAGE(contains(msg,
+        "Connection (20,20,1) of well PROD01 cannot be attached to a segment: "
+        "WELSEGS defines no segments on branch 2."), msg);
+}
+
 // ---------------------------------------------------------------------------
 // Segment attachment of cells reached by several COMPTRAJ pieces
 // ---------------------------------------------------------------------------
@@ -2646,11 +2661,11 @@ WELSEGS
 /
 )";
 
-    Opm::Schedule mswTrajectorySchedule(const std::string&       schedule,
-                                        const std::string&       extra_grid = {},
-                                        const Opm::ParseContext& parseContext = Opm::ParseContext{})
+    Opm::Deck mswTrajectoryDeck(const std::string& schedule,
+                                const std::string& extra_grid = {},
+                                const std::string& units = "METRIC")
     {
-        const auto deck = Opm::Parser{}.parseString(R"(RUNSPEC
+        return Opm::Parser{}.parseString("RUNSPEC\n" + units + R"(
 START
   18 MAR 2026 /
 OIL
@@ -2693,13 +2708,41 @@ TSTEP
   5*10 /
 END
 )");
+    }
 
+    Opm::Schedule mswTrajectorySchedule(const Opm::Deck&         deck,
+                                        const Opm::ParseContext& parseContext = Opm::ParseContext{})
+    {
         const auto es = Opm::EclipseState { deck };
 
         return Opm::Schedule {
             deck, es, parseContext, *std::make_unique<Opm::ErrorGuard>(),
             std::make_shared<Opm::Python>()
         };
+    }
+
+    Opm::Schedule mswTrajectorySchedule(const std::string&       schedule,
+                                        const std::string&       extra_grid = {},
+                                        const Opm::ParseContext& parseContext = Opm::ParseContext{})
+    {
+        return mswTrajectorySchedule(mswTrajectoryDeck(schedule, extra_grid), parseContext);
+    }
+
+    void checkMswInputError(const Opm::Deck& deck,
+                            const std::string& keyword,
+                            const std::string& reason)
+    {
+        const auto& location = deck[keyword].back().location();
+        const auto expected = fmt::format(
+            "Problem with keyword {}\nIn {} line {}\n{}",
+            keyword, location.filename, location.lineno, reason);
+
+        BOOST_CHECK_EXCEPTION(mswTrajectorySchedule(deck), Opm::OpmInputError,
+            [&expected](const Opm::OpmInputError& error)
+            {
+                BOOST_CHECK_EQUAL(std::string{error.what()}, expected);
+                return true;
+            });
     }
 
     // COMPSEGS reference for COMPTRAJ input.  A cell perforated by several
@@ -3155,14 +3198,50 @@ WELSEGS
 /
 )";
 
-    BOOST_CHECK_THROW(mswTrajectorySchedule(schedule), Opm::OpmInputError);
+    checkMswInputError(mswTrajectoryDeck(schedule), "WELSEGS",
+        "Well W1 has segments on branch 3, but no WELTRAJ trajectory for that branch. "
+        "Every branch used in WELSEGS must first be defined by WELTRAJ.");
+}
+
+BOOST_AUTO_TEST_CASE(Welsegs_Main_Branch_Without_Trajectory_Is_Rejected)
+{
+    const auto schedule = R"(WELSPECS
+  'W1' 'G' 3 3 2000.0 OIL /
+/
+WELTRAJ
+  'W1'    2     250    250    2015    2015 /
+  'W1'    2     450    250    2015    2215 /
+/
+WELSEGS
+  'W1'    2015      2015      1*   ABS  'HF-' /
+    2    2     2      1     2115   1*  0.10 1.0e-5 /
+/
+)";
+
+    checkMswInputError(mswTrajectoryDeck(schedule), "WELSEGS",
+        "Well W1 has WELTRAJ trajectory data, but none for the main branch. "
+        "Branch 1 must be defined before WELSEGS can position its segments.");
 }
 
 BOOST_AUTO_TEST_CASE(Welsegs_Segment_Node_Beyond_Trajectory_Is_Rejected)
 {
     // Segment 7 sits at MD 2300, past the end of branch 2's trajectory
     // (MD 2215).  Extrapolating there would invent well geometry.
-    const auto schedule = R"(WELSPECS
+    for (const auto* units : {"METRIC", "FIELD"}) {
+        for (const auto* info_type : {"ABS", "INC"}) {
+            for (const bool range : {false, true}) {
+                BOOST_TEST_CONTEXT(units << ", " << info_type << ", range=" << range) {
+                    const bool absolute = std::string_view{info_type} == "ABS";
+                    const auto lateral = range
+                        ? fmt::format(" 5 7 2 2 {} 1* 0.10 1.0e-5 /\n",
+                                      absolute ? 2300 : 95)
+                        : fmt::format(" 5 5 2 2 {} 1* 0.10 1.0e-5 /\n"
+                                      " 6 6 2 5 {} 1* 0.10 1.0e-5 /\n"
+                                      " 7 7 2 6 {} 1* 0.10 1.0e-5 /\n",
+                                      absolute ? 2110 : 95,
+                                      absolute ? 2205 : 95,
+                                      absolute ? 2300 : 95);
+                    const auto schedule = fmt::format(R"(WELSPECS
   'W1' 'G' 3 3 2000.0 OIL /
 /
 WELTRAJ
@@ -3172,17 +3251,21 @@ WELTRAJ
   'W1'    2     450    250    2015    2215 /
 /
 WELSEGS
-  'W1'    2000      2000      1*   ABS  'HF-' /
-    2    2     1      1     2005   2005  0.15 1.0e-5 /
-    3    3     1      2     2015   2015  0.15 1.0e-5 /
-    4    4     1      3     2025   2025  0.15 1.0e-5 /
-    5    5     2      2     2040   2015  0.10 1.0e-5 /
-    6    6     2      5     2115   2015  0.10 1.0e-5 /
-    7    7     2      6     2300   2015  0.10 1.0e-5 /
+  'W1'    2000      2000      1*   {}  'HF-' /
+    2    2     1      1     {}   1*  0.15 1.0e-5 /
+{}
 /
-)";
+)", info_type, absolute ? 2015 : 15, lateral);
 
-    BOOST_CHECK_THROW(mswTrajectorySchedule(schedule), Opm::OpmInputError);
+                    const auto* length_unit = std::string_view{units} == "FIELD" ? "FT" : "M";
+                    checkMswInputError(mswTrajectoryDeck(schedule, {}, units), "WELSEGS",
+                        fmt::format("Segment 7 of well W1 (branch 2) has node measured depth "
+                                    "2300 {}, outside its WELTRAJ trajectory range of "
+                                    "2015 to 2215 {}.", length_unit, length_unit));
+                }
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(Welsegs_Top_Node_Is_Taken_From_The_Trajectory)
@@ -3267,7 +3350,51 @@ WELSEGS
 /
 )";
 
-    BOOST_CHECK_THROW(mswTrajectorySchedule(schedule), Opm::OpmInputError);
+    for (const auto* units : {"METRIC", "FIELD"}) {
+        const auto* length_unit = std::string_view{units} == "FIELD" ? "FT" : "M";
+        checkMswInputError(mswTrajectoryDeck(schedule, {}, units), "WELSEGS",
+            fmt::format("TOP_LENGTH 1990 {} in WELSEGS for well W1 is less than "
+                        "the starting measured depth 2000 {} of its WELTRAJ "
+                        "trajectory on branch 1.", length_unit, length_unit));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(Comptraj_MSW_Branch_Without_Segments_Is_Rejected)
+{
+    const auto schedule = R"(WELSPECS
+  'W1' 'G' 3 3 2000.0 OIL /
+/
+WELTRAJ
+  'W1'    1     250    250    2000    2000 /
+  'W1'    1     250    250    2030    2030 /
+  'W1'    2     250    250    2015    2015 /
+  'W1'    2     450    250    2015    2215 /
+/
+WELSEGS
+  'W1'    2000      2000      1*   ABS  'HF-' /
+    2    4     1      1     2025   1*  0.15 1.0e-5 /
+/
+COMPTRAJ
+  'W1'    1    2000   2030   2*     1*    1*   10.0  0.15  100  0 /
+  'W1'    2    2015   2215   2*     1*    1*   30.0  0.10  300  0 /
+/
+)";
+
+    for (const auto* units : {"METRIC", "FIELD"}) {
+        for (const bool active : {true, false}) {
+            BOOST_TEST_CONTEXT(units << ", lateral cells active=" << active) {
+                const auto extra_grid = active ? "" : "EQUALS\n ACTNUM 0 1 5 1 5 2 2 /\n/\n";
+                const auto* length_unit = std::string_view{units} == "FIELD" ? "FT" : "M";
+                checkMswInputError(mswTrajectoryDeck(schedule, extra_grid, units), "COMPTRAJ",
+                    fmt::format(
+                        "Well W1: COMPTRAJ perforates branch 2 between measured depths "
+                        "2015 and 2215 {}, but WELSEGS defines no segments on that branch "
+                        "(defined branches: 1). COMPTRAJ connections attach to the nearest "
+                        "segment node on their own branch; add the segments of branch 2 "
+                        "to WELSEGS before this COMPTRAJ keyword.", length_unit));
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(Welsegs_Top_Segment_Only_Is_Rejected_For_A_Trajectory_Well)

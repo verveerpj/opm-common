@@ -222,12 +222,14 @@ namespace {
 
                 if (segment_number == 0) {
                     throw std::runtime_error {
-                        fmt::format("Connection ({},{},{}) for well {} cannot "
-                                    "be allocated to a well segment based on MD",
+                        fmt::format("Connection ({},{},{}) of well {} cannot "
+                                    "be attached to a segment: WELSEGS defines "
+                                    "no segments on branch {}.",
                                     compseg.m_i + 1,
                                     compseg.m_j + 1,
                                     compseg.m_k + 1,
-                                    well_name)
+                                    well_name,
+                                    compseg.m_branch_number)
                     };
                 }
 

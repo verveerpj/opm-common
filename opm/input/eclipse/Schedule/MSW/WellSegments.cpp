@@ -20,6 +20,7 @@
 #include <opm/input/eclipse/Schedule/MSW/WellSegments.hpp>
 
 #include <opm/common/OpmLog/OpmLog.hpp>
+#include <opm/common/utility/OpmInputError.hpp>
 #include <opm/common/utility/numeric/linearInterpolation.hpp>
 
 #include <opm/input/eclipse/Schedule/MSW/AICD.hpp>
@@ -109,18 +110,22 @@ In {{file}} line {{line}}
     trajectoryPoint(std::string_view                                         well_name,
                     const std::map<int, std::array<std::vector<double>, 3>>& coords,
                     const std::map<int, std::vector<double>>&                mds,
-                    const int                                                branch,
-                    const double                                             md)
+                    const Opm::Segment&                                      segment,
+                    const double                                             md,
+                    const Opm::UnitSystem&                                   unit_system,
+                    const Opm::KeywordLocation&                              location)
     {
+        const auto branch = segment.branchNumber();
         const auto coordPos = coords.find(branch);
         const auto mdPos = mds.find(branch);
 
         if ((coordPos == coords.end()) || (mdPos == mds.end()) || mdPos->second.empty()) {
-            throw std::logic_error {
+            throw Opm::OpmInputError {
                 fmt::format("Well {} has segments on branch {}, but no WELTRAJ "
                             "trajectory for that branch. Every branch used in "
                             "WELSEGS must first be defined by WELTRAJ.",
-                            well_name, branch)
+                            well_name, branch),
+                location
             };
         }
 
@@ -128,11 +133,15 @@ In {{file}} line {{line}}
         const auto begin = branch_mds.front();
         const auto end = branch_mds.back();
         if ((md < begin) || (md > end)) {
-            throw std::logic_error {
-                fmt::format("Segment node at measured depth {} on branch {} of "
-                            "well {} lies outside the branch's trajectory, "
-                            "which covers measured depths {} to {}.",
-                            md, branch, well_name, begin, end)
+            const auto length = Opm::UnitSystem::measure::length;
+            throw Opm::OpmInputError {
+                fmt::format("Segment {} of well {} (branch {}) has node measured depth "
+                            "{:g} {}, outside its WELTRAJ trajectory range of {:g} to {:g} {}.",
+                            segment.segmentNumber(), well_name, branch,
+                            unit_system.from_si(length, md), unit_system.name(length),
+                            unit_system.from_si(length, begin), unit_system.from_si(length, end),
+                            unit_system.name(length)),
+                location
             };
         }
 
@@ -308,7 +317,7 @@ namespace Opm {
         }
 
         this->process(wname, {}, {}, unit_system, WellSegments::LengthDepth::ABS,
-                      this->depthTopSegment(), this->lengthTopSegment());
+                      this->depthTopSegment(), this->lengthTopSegment(), {});
     }
 
 
@@ -339,18 +348,24 @@ namespace Opm {
         if (!mds.empty()) {
             const auto mainBranch = mds.find(1);
             if ((mainBranch == mds.end()) || mainBranch->second.empty()) {
-                throw std::logic_error {
+                throw OpmInputError {
                     fmt::format("Well {} has WELTRAJ trajectory data, but none "
                                 "for the main branch. Branch 1 must be defined "
-                                "before WELSEGS can position its segments.", wname)
+                                "before WELSEGS can position its segments.", wname),
+                    welsegsKeyword.location()
                 };
             }
 
             if (length_top < mainBranch->second.front()) {
-                throw std::logic_error {
-                    fmt::format("TOP_LENGTH {} in WELSEGS for well {} is less than "
-                                "the trajectory starting MD {}.",
-                                length_top, wname, mainBranch->second.front())
+                const auto length = UnitSystem::measure::length;
+                throw OpmInputError {
+                    fmt::format("TOP_LENGTH {:g} {} in WELSEGS for well {} is less than "
+                                "the starting measured depth {:g} {} of its WELTRAJ "
+                                "trajectory on branch 1.",
+                                unit_system.from_si(length, length_top), unit_system.name(length),
+                                wname, unit_system.from_si(length, mainBranch->second.front()),
+                                unit_system.name(length)),
+                    welsegsKeyword.location()
                 };
             }
 
@@ -542,7 +557,8 @@ namespace Opm {
             m_segments[outlet_segment_index].addInletSegment(segment.segmentNumber());
         }
 
-        this->process(wname, coords, mds, unit_system, length_depth_type, depth_top, length_top);
+        this->process(wname, coords, mds, unit_system, length_depth_type,
+                      depth_top, length_top, welsegsKeyword.location());
     }
 
     const Segment& WellSegments::getFromSegmentNumber(const int segment_number) const {
@@ -561,14 +577,15 @@ namespace Opm {
                                const std::map<int, std::vector<double>>& mds,
                                const UnitSystem& unit_system,
                                const LengthDepth length_depth,
-                               const double      depth_top,
-                               const double      length_top)
+                               const double depth_top,
+                               const double length_top,
+                               const KeywordLocation& location)
     {
         if (length_depth == LengthDepth::ABS) {
-            this->processABS(well_name, coords, mds);
+            this->processABS(well_name, coords, mds, unit_system, location);
         }
         else if (length_depth == LengthDepth::INC) {
-            this->processINC(well_name, coords, mds, depth_top, length_top);
+            this->processINC(well_name, coords, mds, depth_top, length_top, unit_system, location);
         }
         else {
             throw std::logic_error {
@@ -583,7 +600,9 @@ namespace Opm {
     void
     WellSegments::processABS(const std::string& well_name,
                              const std::map<int, std::array<std::vector<double>, 3>>& coords,
-                             const std::map<int, std::vector<double>>& mds)
+                             const std::map<int, std::vector<double>>& mds,
+                             const UnitSystem& unit_system,
+                             const KeywordLocation& location)
     {
         // Meaningless value to indicate unspecified/uncompleted values
         const double invalid_value = Segment::invalidValue();
@@ -596,14 +615,14 @@ namespace Opm {
         std::size_t current_index = use_trajectory ? 0 : 1;
         while (current_index < size()) {
             const auto& current_segment = this->m_segments[current_index];
-            const auto  branch          = current_segment.branchNumber();
 
             if (current_segment.dataReady()) {
                 if (use_trajectory) {
                     // Take the segment node's depth and X/Y position from the
                     // trajectory rather than from the WELSEGS record.
                     const auto length = current_segment.totalLength();
-                    const auto coord = trajectoryPoint(well_name, coords, mds, branch, length);
+                    const auto coord = trajectoryPoint(well_name, coords, mds, current_segment,
+                                                       length, unit_system, location);
 
                     this->addSegment(Segment {
                         current_segment, coord[2], length, coord[0], coord[1]
@@ -664,7 +683,8 @@ namespace Opm {
                 if (use_trajectory) {
                     // Interpolated segment nodes take their depth and X/Y
                     // position from the trajectory too.
-                    const auto coord = trajectoryPoint(well_name, coords, mds, branch, new_length);
+                    const auto coord = trajectoryPoint(well_name, coords, mds, old_segment,
+                                                       new_length, unit_system, location);
                     new_depth = coord[2];
                     new_x     = coord[0];
                     new_y     = coord[1];
@@ -716,7 +736,9 @@ namespace Opm {
                              const std::map<int, std::array<std::vector<double>, 3>>& coords,
                              const std::map<int, std::vector<double>>& mds,
                              double depth_top,
-                             double length_top)
+                             double length_top,
+                             const UnitSystem& unit_system,
+                             const KeywordLocation& location)
     {
         // Give the top segment absolute depth/length and mark it data-ready.
         Segment new_top_segment(this->m_segments[0], depth_top, length_top);
@@ -729,14 +751,14 @@ namespace Opm {
         // Include the top segment only to update its coordinates from the trajectory.
         for (std::size_t i_index = use_trajectory ? 0 : 1; i_index < size(); ++i_index) {
             const auto& current_segment = this->m_segments[i_index];
-            const auto  branch          = current_segment.branchNumber();
 
             if (current_segment.dataReady()) {
                 if (use_trajectory) {
                     // Take the segment node's depth and X/Y position from the
                     // trajectory rather than from the WELSEGS record.
                     const auto length = current_segment.totalLength();
-                    const auto coord = trajectoryPoint(well_name, coords, mds, branch, length);
+                    const auto coord = trajectoryPoint(well_name, coords, mds, current_segment,
+                                                       length, unit_system, location);
 
                     this->addSegment(Segment {
                         current_segment, coord[2], length, coord[0], coord[1]
@@ -761,7 +783,8 @@ namespace Opm {
             if (use_trajectory) {
                 // Take the segment node's depth and X/Y position from the
                 // trajectory rather than accumulating the WELSEGS increments.
-                const auto coord = trajectoryPoint(well_name, coords, mds, branch, new_length);
+                const auto coord = trajectoryPoint(well_name, coords, mds, current_segment,
+                                                   new_length, unit_system, location);
                 new_depth = coord[2];
                 new_x     = coord[0];
                 new_y     = coord[1];

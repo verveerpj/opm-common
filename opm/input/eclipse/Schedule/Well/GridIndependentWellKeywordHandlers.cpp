@@ -57,6 +57,7 @@
 #include <vector>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace Opm
 {
@@ -218,6 +219,26 @@ namespace
                             "Well {} is a segmented grid-independent well, but its WELSEGS keyword "
                             "only defines the top segment. The segment structure of a COMPTRAJ well "
                             "is taken from WELSEGS and must be given explicitly.", well.name());
+
+                        throw OpmInputError(msg, handlerContext.keyword.location());
+                    }
+
+                    if (std::ranges::none_of(well.getSegments(),
+                            [branch = interval.branch](const Segment& segment)
+                            { return segment.branchNumber() == branch; }))
+                    {
+                        const auto& units = handlerContext.static_schedule().m_unit_system;
+                        const auto msg = fmt::format(
+                            "Well {}: COMPTRAJ perforates branch {} between measured depths "
+                            "{:g} and {:g} {}, but WELSEGS defines no segments on that branch "
+                            "(defined branches: {}). COMPTRAJ connections attach to the nearest "
+                            "segment node on their own branch; add the segments of branch {} "
+                            "to WELSEGS before this COMPTRAJ keyword.",
+                            name, interval.branch,
+                            units.from_si(UnitSystem::measure::length, interval.top),
+                            units.from_si(UnitSystem::measure::length, interval.bottom),
+                            units.name(UnitSystem::measure::length),
+                            fmt::join(well.getSegments().branches(), ", "), interval.branch);
 
                         throw OpmInputError(msg, handlerContext.keyword.location());
                     }

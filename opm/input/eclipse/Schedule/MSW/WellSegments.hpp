@@ -178,19 +178,24 @@ namespace Opm {
     private:
         void processABS(const std::string& well_name,
                         const std::map<int, std::array<std::vector<double>, 3>>& coords,
-                        const std::map<int, std::vector<double>>& mds);
+                        const std::map<int, std::vector<double>>& mds,
+                        const UnitSystem& unit_system,
+                        const KeywordLocation& location);
         void processINC(const std::string& well_name,
                         const std::map<int, std::array<std::vector<double>, 3>>& coords,
                         const std::map<int, std::vector<double>>& mds,
                         double depth_top,
-                        double length_top);
+                        double length_top,
+                        const UnitSystem& unit_system,
+                        const KeywordLocation& location);
         void process(const std::string& well_name,
                      const std::map<int, std::array<std::vector<double>, 3>>& coords,
                      const std::map<int, std::vector<double>>& mds,
                      const UnitSystem& unit_system,
                      LengthDepth length_depth,
                      double depth_top,
-                     double length_top);
+                     double length_top,
+                     const KeywordLocation& location);
         void addSegment(const Segment& new_segment);
         void addSegment(const int segment_number,
                         const int branch,
